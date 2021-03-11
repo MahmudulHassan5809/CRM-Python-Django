@@ -1,0 +1,58 @@
+<div class="sidebar" id="sidebar">
+                <div class="sidebar-inner slimscroll">
+                    <div id="sidebar-menu" class="sidebar-menu">
+                        <ul>
+                            <li class="active">
+                                <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Dashboard</span></a>
+                            </li>
+
+                            <li class="menu-title"><span>Main</span></li>
+
+                            <li class="submenu">
+                                <a href="#"><i data-feather="users"></i> <span> Users</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a href="{% url 'accounts:add_user' %}">Add User</a></li>
+                                    <li><a href="{% url 'accounts:user_list' %}">All User</a></li>
+
+                                </ul>
+                            </li>
+
+                            <li class="menu-title"><span>Branch</span></li>
+
+                            <li class="submenu">
+                                <a href="#"><i data-feather="briefcase"></i> <span> Branch</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a href="{% url 'branch:create_branch' %}">Create Branch</a></li>
+                                    <li><a href="{% url 'branch:branch_list' %}">Branch List</a></li>
+
+
+                                </ul>
+                            </li>
+
+
+
+                            <li class="menu-title"><span>Others</span></li>
+
+                            <li class="submenu">
+
+                            <li class="">
+                                <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Meeting Announcement</span></a>
+                            </li>
+                            <li class="">
+                                <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Todo List</span></a>
+                            </li>
+                            <li class="">
+                                <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Sales Report</span></a>
+                            </li>
+                           <li class="">
+                                <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Attendance</span></a>
+                            </li>
+
+
+
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+create_branch

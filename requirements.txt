@@ -1,0 +1,12 @@
+asgiref==3.3.1
+Django==3.1.7
+django-admin-autocomplete-filter==0.6.1
+django-ckeditor==6.0.0
+django-crispy-forms==1.11.1
+django-debug-toolbar==3.2
+django-js-asset==1.2.2
+django-smart-selects==1.5.9
+Pillow==8.1.2
+pytz==2021.1
+six==1.15.0
+sqlparse==0.4.1

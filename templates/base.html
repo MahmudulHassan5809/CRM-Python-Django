@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            CRM
+        {% endblock title %}
+    </title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="assets/img/favicon.png">
+
+    {% include 'partials/_css.html' %}
+</head>
+<body>
+
+
+    <div class="main-wrapper">
+        {% include 'partials/_header.html' %}
+        {% include 'partials/_sidebar.html' %}
+
+
+        <div class="page-wrapper">
+                <div class="content container-fluid">
+
+                    <!-- Page Header -->
+                    {% include 'partials/_page_header.html' %}
+                    <!-- /Page Header -->
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            {% block content %}
+
+                            {% endblock content %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+
+    {% include 'partials/_js.html' %}
+
+    {% block script %}
+
+    {% endblock script %}
+
+</body>
+</html>
