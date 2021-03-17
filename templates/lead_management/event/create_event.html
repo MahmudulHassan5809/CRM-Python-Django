@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block style %}
+    
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript" src="{% static '/admin/js/core.js' %}"></script>
+<link rel="stylesheet" type="text/css"
+    href="{% static 'admin/css/forms.css' %} "/>
+<link rel="stylesheet" type="text/css"
+    href="{% static 'admin/css/base.css' %} "/>
+<link rel="stylesheet" type="text/css"
+    href="{% static 'admin/css/global.css' %}"/>
+<link rel="stylesheet" type="text/css"
+    href="{% static 'admin/css/widgets.css' %}"/>
+{% endblock style %}
+
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <div class="float-left">
+                <h5 class="card-title">{{title}}</h5>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <form action="{% url 'lead_management:create_event' %}" method="POST" novalidate>
+                        {% csrf_token %}
+                        {{form.media}}
+                        {{form|crispy}}
+
+                        <button type="submit" class="btn btn-info">Save</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    
+    </div>
+
+
+{% endblock content %}

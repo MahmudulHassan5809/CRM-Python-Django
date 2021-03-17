@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block content %}
+    <div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Responsive Tables</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Event Name</th>
+                        <th>Event Description</th>
+                        <th>Event Date</th>
+                        <th>Event Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in event_list %}
+                        <tr>
+                            <td>{{forloop.counter0|add:page_obj.start_index}}</td>
+                            <td>{{event.name}}</td>
+                            <td>{{event.description}}</td>
+                            <td>
+                                {{event.event_date}}
+                            </td>
+
+                            <td>
+                                {% if event.active %}
+                                    Active
+                                {% else %}
+                                    Inactive
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="" class="btn btn-primary btn-sm">View Leads</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

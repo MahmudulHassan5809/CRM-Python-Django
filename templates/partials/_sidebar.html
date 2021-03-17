@@ -24,8 +24,29 @@
                                 <ul>
                                     <li><a href="{% url 'branch:create_branch' %}">Create Branch</a></li>
                                     <li><a href="{% url 'branch:branch_list' %}">Branch List</a></li>
+                                </ul>
+                            </li>
 
 
+                            <li class="menu-title"><span>Event Management</span></li>
+
+                            <li class="submenu">
+                                <a href="#"><i data-feather="briefcase"></i> <span> Event Management</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a href="{% url 'lead_management:create_event' %}">Create Event</a></li>
+                                    <li><a href="{% url 'lead_management:event_list' %}">Event List</a></li>
+                                    
+                                </ul>
+                            </li>
+
+                            <li class="menu-title"><span>Lead Management</span></li>
+
+                            <li class="submenu">
+                                <a href="#"><i data-feather="briefcase"></i> <span> Lead Management</span> <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li><a href="{% url 'lead_management:create_single_lead' %}">Create Single Lead</a></li>
+                                    <li><a href="{% url 'lead_management:lead_list' %}">All Lead</a></li>
+                                    
                                 </ul>
                             </li>
 

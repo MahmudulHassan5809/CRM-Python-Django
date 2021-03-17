@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block content %}
+    <div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Responsive Tables</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                                          
+                </thead>
+                <tbody>
+                    {% for lead in lead_list %}
+                        <tr>
+                            <td>{{forloop.counter0|add:page_obj.start_index}}</td>
+                            <td>{{lead.name}}</td>
+                            <td>{{lead.email}}</td>
+                            <td>
+                                {{lead.phone_number}}
+                            </td>
+						</tr>
+                    {% empty %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
