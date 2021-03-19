@@ -10,12 +10,23 @@
 
 {% block content %}
     <div class="card">
+    
     <div class="card-header">
-        <h5 class="card-title">Responsive Tables</h5>
+        <div class="float-left">
+            <h5 class="card-title">{{title}}</h5>
+        </div>
+        <div class="float-right top-nav-search">
+            <form method="GET" action="{% url 'lead_management:event_list' %}">
+                    <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+
+        </div>
     </div>
+    
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-nowrap mb-0">
+            <table class="table table-nowrap mb-0 task-table">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -45,7 +56,8 @@
                             </td>
 
                             <td>
-                                <a href="" class="btn btn-primary btn-sm">View Leads</a>
+                                <a href="{% url 'lead_management:lead_list' event.id %}" class="btn btn-primary btn-sm">View Leads</a>
+                                <a href="{% url 'lead_management:task_assign' event.id %}" class="btn btn-primary btn-sm">Assign Task</a>
                             </td>
                         </tr>
                     {% empty %}

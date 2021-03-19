@@ -1,3 +1,55 @@
+
+:root {
+  --borderWidth: 7px;
+  --height: 64px;
+  --width: 36px;
+  --borderColor: #78b13f;
+}
+
 .invalid-feedback{
     display: block !important;
+}
+
+/*
+.header-css {
+	border-radius: 0;
+	background-color: #b7bbbe;
+}
+
+.sidebar-css, .dropdown-nav-css {
+	background-color: #e5e6e6;
+}
+*/
+
+.task-table .table td, .table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.header-css {
+	border-radius: 0;
+	background-color: #0F76B8;
+	
+}
+
+.dt-css {
+	color: white;
+}
+
+.sidebar-css, .dropdown-nav-css {
+	background-color: #e5e6e6;
+}
+
+
+.modal-body-check{
+ 	text-align: center;;
+  /*display: inline-block;*/
+  margin: 0 auto;
+  margin-bottom: 50px;
+  transform: rotate(45deg);
+  height: var(--height);
+  width: var(--width);
+  border-bottom: var(--borderWidth) solid var(--borderColor);
+  border-right: var(--borderWidth) solid var(--borderColor);
 }

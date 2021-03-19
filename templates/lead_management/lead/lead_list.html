@@ -10,9 +10,26 @@
 
 {% block content %}
     <div class="card">
-    <div class="card-header">
-        <h5 class="card-title">Responsive Tables</h5>
-    </div>
+        <div class="card-header">
+                <div class="float-left">
+                    <h5 class="card-title">{{title}}</h5>
+                </div>
+                <div class="float-right top-nav-search">
+                    {% if event_id %}
+                        <form method="GET" action="{% url 'lead_management:lead_list' event_id %}">
+                            <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                            <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                        </form>
+                    {% else %}
+                        <form method="GET" action="{% url 'lead_management:lead_list' %}">
+                            <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                            <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                        </form>
+
+                    {% endif %}
+
+                </div>
+            </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-nowrap mb-0">
@@ -22,6 +39,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone Number</th>
+                        <th>Status</th>
                                           
                 </thead>
                 <tbody>
@@ -33,12 +51,23 @@
                             <td>
                                 {{lead.phone_number}}
                             </td>
+                            <td>
+                                {% if lead.assigned %}
+                                    <span class="badge badge-primary">Assigned</span>
+                                {% else %}  
+                                    <span class="badge badge-danger">Not Assigned</span>
+                                {% endif %}
+                            </td>
 						</tr>
                     {% empty %}
 
                     {% endfor %}
                 </tbody>
             </table>
+
+            <section class="comp-section mt-3">
+                {% include 'partials/_pagination.html' %}
+            </section>
         </div>
     </div>
 </div>

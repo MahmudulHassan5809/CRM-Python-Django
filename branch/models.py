@@ -4,7 +4,7 @@ import uuid
 class Branch(models.Model):
     branch_name = models.CharField(max_length=200)
     parent = models.ForeignKey('self', related_name='children', on_delete=models.CASCADE, null=True, blank=True)
-    user = models.ManyToManyField('accounts.User', related_name='brnach_users')
+    user = models.ManyToManyField('accounts.User', related_name='branch_users')
 
 
     class Meta:

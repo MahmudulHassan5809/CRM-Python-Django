@@ -1,5 +1,8 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth import get_user_model 
+from smart_selects.db_fields import ChainedForeignKey
+
 
 
 User = get_user_model()
@@ -7,11 +10,17 @@ User = get_user_model()
 # Create your models here.
 
 
+class EventQuerySet(models.QuerySet):
+	def filter_by_query(self,query):
+		return self.filter(name__icontains=query)
+
 class Event(models.Model):
 	name = models.CharField(max_length=255)
 	description = models.TextField()
 	event_date = models.DateField()
 	active = models.BooleanField(default=True)
+
+	objects = EventQuerySet.as_manager()
 
 	def __str__(self):
 		return self.name
@@ -26,6 +35,12 @@ class LeadQuerySet(models.QuerySet):
     def filter_by_event(self,event_id):
         return self.filter(event__id=event_id)
 
+    def filter_query(self,query):
+        return self.filter(Q(name__icontains=query) | Q(event__name__icontains=query))
+
+
+    def filter_by_is_assigned(self,bool):
+    	return self.filter(assigned=bool)
     
 
 
@@ -36,10 +51,12 @@ class Lead(models.Model):
 	email = models.EmailField(max_length=254)
 	phone_number = models.CharField(max_length=255)
 	present_address = models.CharField(max_length=255)
-	country_of_interest = models.JSONField()
+	country_of_interest = models.CharField(max_length=255)
 	last_completed_education = models.CharField(max_length=255)
 	ielts = models.CharField(max_length=255)
+	remarks = models.CharField(max_length=255,null=True,blank=True)
 	created_at = models.DateField(auto_now_add=True)
+	assigned = models.BooleanField(default=False)
 
 	objects = LeadQuerySet.as_manager()
 
@@ -49,3 +66,38 @@ class Lead(models.Model):
 	class Meta:
 		verbose_name_plural = '1. Leads'
 
+
+
+class TaskAssign(models.Model):
+	TASK_STATUS_CHOICE = [
+		('Not Available', (
+            ('PHONE_OFF', 'Phone Off'),
+            ('NO ANSWER', 'No Answer'),
+            ('CALL_FORWARDED', 'Call Forwarded'),
+            ('INCORREET_NUMBER', 'Incorrect Number'),
+            ('OTHER', 'Other'),
+        )
+	    ),
+	    ('Video', (
+	            ('vhs', 'VHS Tape'),
+	            ('dvd', 'DVD'),
+	        )
+	    ),
+	    ('NEW', 'New'),
+
+	]
+	branch = models.ForeignKey('branch.Branch',on_delete=models.CASCADE)
+	assignee = ChainedForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='user_tasks',
+        chained_field="branch",
+        chained_model_field="branch_users",
+        show_all=False,
+        auto_choose=True,
+        sort=True)
+
+	event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name='event_tasks')
+	lead = models.ForeignKey(Lead,on_delete=models.CASCADE,related_name='lead_taks')
+	
+	status = models.CharField(max_length=20,choices=TASK_STATUS_CHOICE,default='NEW')

@@ -4,7 +4,9 @@ from django.forms import ModelForm
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.admin import widgets
 
-from .models import Lead,Event
+import mimetypes
+
+from .models import Lead,Event,TaskAssign
 
 
 class EventCreateForm(ModelForm):
@@ -29,3 +31,35 @@ class LeadCreateForm(ModelForm):
     class Meta:
         model = Lead
         exclude = ['created_by',]
+
+
+class BulkLeadCreateForm(forms.Form):
+	event = forms.ModelChoiceField(required=True,queryset=Event.objects.filter(active=True))
+	file = forms.FileField(label='Select a file')
+
+
+	def clean_file(self):
+		excel_file = self.cleaned_data.get('file')
+		content_type, charset = mimetypes.guess_type(excel_file.name)
+		extension = str(content_type).split('.')[-1]
+
+		if extension != 'sheet':
+			raise forms.ValidationError(f'Your file formate {extension} is not valid. Valid excel extension is xlsx.')
+		return excel_file
+
+
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		field_names = [field_name for field_name, _ in self.fields.items()]
+		for field_name in field_names:
+			field = self.fields.get(field_name)
+			field.widget.attrs.update({'placeholder': field.label})
+
+
+
+
+class TaskAssignForm(ModelForm):
+	class Meta:
+		model = TaskAssign
+		fields = ['branch','assignee']

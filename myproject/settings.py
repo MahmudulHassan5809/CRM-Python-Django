@@ -33,6 +33,7 @@ INSTALLED_APPS = [
 
     'smart_selects',
     'ckeditor',
+    'django_tables2',
     'crispy_forms',
     'admin_auto_filters',
     'debug_toolbar',

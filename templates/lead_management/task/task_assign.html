@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+
+{% load static %}
+
+{% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+                <div class="float-left">
+                    <h5 class="card-title">{{title}}</h5>
+                </div>
+               
+            </div>
+    
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <form method="post" id="post-form">
+            {% csrf_token %}
+
+            
+
+            {% render_table table %}
+                
+                {% if qs_count > 0 %}
+                    <a href="#" data-toggle="modal" data-target="#add_new_event" class="btn mb-3 btn-primary btn-sm mt-3">
+                        <i class="fas fa-plus"></i> Assign Task
+                    </a>
+                {% endif %}
+                
+           
+
+                <div class="modal custom-modal fade" id="add_new_event">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Task Assign</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="modal-body-form">
+                                    {{task_assign_form.media.js}}
+                                    {{task_assign_form|crispy}}
+                                    <div class="submit-section">
+                                        <button type="submit" class="btn btn-primary  save-categorysubmit-btn">Save</button>
+                                    </div>
+                                </div>
+
+                                <div class="modal-body-check d-none"></div>
+                                
+
+                                <div class="msg font-weight-bold"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+
+{% block script %}
+    <script type="text/javascript">
+        $('th input[type="checkbox"]').change( function () {
+            $( 'tr td input[type="checkbox"]' ).prop('checked', this.checked)
+        })
+    
+
+        var event_id = "{{ event_id|safe  }}"
+
+
+
+
+        $('#post-form').on('submit', function(event){
+            event.preventDefault();
+            var form_data = $("#post-form").serialize();
+            
+            $(".modal-body-form").hide()
+
+            $.ajax({
+                type:'POST',
+                url:'{% url "lead_management:task_assign" event_id %}',
+                data:form_data,
+                success:function(data){
+                    console.log(data)
+                    $(".modal-body-check").removeClass("d-none")
+                    $(".modal-title").text("Task Assignment Successful!")
+                    $(".msg").text(data)
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });    
+
+    </script>
+{% endblock script %}
+
+
+
+
+    
+
