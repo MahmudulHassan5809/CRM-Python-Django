@@ -57,7 +57,7 @@
 
                             <td>
                                 <a href="{% url 'lead_management:lead_list' event.id %}" class="btn btn-primary btn-sm">View Leads</a>
-                                <a href="{% url 'lead_management:task_assign' event.id %}" class="btn btn-primary btn-sm">Assign Task</a>
+                                <a href="{% url 'lead_management:task_assign' event.id  'unassigned' %}" class="btn btn-primary btn-sm">Assign Task</a>
                             </td>
                         </tr>
                     {% empty %}

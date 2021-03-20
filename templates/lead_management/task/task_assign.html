@@ -17,10 +17,23 @@
 
 {% block content %}
 
+    <div class="card bg-white">
+                                        
+        <div class="card-body">
+            <ul class="nav nav-tabs nav-tabs-top">
+                <li class="nav-item"><a class="nav-link {% if lead_type == 'unassigned' %}active{% endif %}" 
+                    href="{% url 'lead_management:task_assign' event_id  'unassigned' %}">Unassigned <span class="badge badge-primary">({{unassigned_count}})</span> </a></li>
+                <li class="nav-item"><a class="nav-link {% if lead_type == 'assigned' %}active{% endif %}" 
+                    href="{% url 'lead_management:task_assign' event_id  'assigned' %}">Assigned <span class="badge badge-primary">({{assigned_count}})</span></a></li>
+                
+            </ul>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
                 <div class="float-left">
-                    <h5 class="card-title">{{title}}</h5>
+                    <h5 class="card-title">Assign Leads</h5>
                 </div>
                
             </div>
@@ -35,11 +48,11 @@
 
             {% render_table table %}
                 
-                {% if qs_count > 0 %}
+               
                     <a href="#" data-toggle="modal" data-target="#add_new_event" class="btn mb-3 btn-primary btn-sm mt-3">
                         <i class="fas fa-plus"></i> Assign Task
                     </a>
-                {% endif %}
+               
                 
            
 
@@ -86,7 +99,7 @@
     
 
         var event_id = "{{ event_id|safe  }}"
-
+        var lead_type = "{{ lead_type|safe }}"
 
 
 
@@ -98,19 +111,26 @@
 
             $.ajax({
                 type:'POST',
-                url:'{% url "lead_management:task_assign" event_id %}',
+                url:'{% url "lead_management:task_assign" event_id lead_type %}',
                 data:form_data,
                 success:function(data){
                     console.log(data)
                     $(".modal-body-check").removeClass("d-none")
                     $(".modal-title").text("Task Assignment Successful!")
                     $(".msg").text(data)
+
+
                 },
                 error : function(xhr,errmsg,err) {
                     console.log(xhr.status + ": " + xhr.responseText);
                 }
             });
-        });    
+        }); 
+
+
+        $(".close").on("click",function(e) {
+            window.location.reload()
+        })   
 
     </script>
 {% endblock script %}

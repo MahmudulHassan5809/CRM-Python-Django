@@ -17,6 +17,6 @@ urlpatterns = [
 	path('lead-list/<int:event_id>/',views.LeadListView.as_view(),name="lead_list"),
 
 
-	path('task/assign/<int:event_id>', views.TaskAssignView.as_view(),name='task_assign'),
+	path('task/assign/<int:event_id>/<str:type>', views.TaskAssignView.as_view(),name='task_assign'),
     
 ]

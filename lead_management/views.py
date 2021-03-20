@@ -196,15 +196,26 @@ class LeadListView(LoginRequiredMixin,generic.ListView):
 class TaskAssignView(LoginRequiredMixin,View):
 	def get(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
-		qs = Lead.objects.filter_by_event(event_id)
+		lead_type = self.kwargs.get('type',None)
+		
+		if lead_type == 'unassigned':
+			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(False)
+		elif lead_type == 'assigned':
+			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True)
+		else:
+			qs = Lead.objects.filter_by_event(event_id)
+		
+
 		table = TaskAssignTable(qs)
 		task_assign_form = TaskAssignForm()
 		context = {
 			'table' : table,
-			'title' : 'Task Assign',
+			'title' : 'Lead Management',
 			'event_id' : event_id,
+			'lead_type' : lead_type,
 			'task_assign_form' : task_assign_form,
-			'qs_count' : qs.count
+			'unassigned_count' : Lead.objects.filter_by_event(event_id).filter_by_is_assigned(False).count(),
+			'assigned_count' : Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True).count()
 		}
 
 		return render(request,'lead_management/task/task_assign.html',context)
@@ -221,10 +232,10 @@ class TaskAssignView(LoginRequiredMixin,View):
 
 		print(request.POST)
 		
-		# for pk in pks:
-		# 	TaskAssign.objects.create(lead_id=pk,branch_id=branch_id,assignee_id=assignee_id,event_id=event_id)
+		for pk in pks:
+			TaskAssign.objects.create(lead_id=pk,branch_id=branch_id,assignee_id=assignee_id,event_id=event_id)
 
-		# Lead.objects.filter(id__in=pks).update(assigned=True)
+		Lead.objects.filter(id__in=pks).update(assigned=True)
 		
 		return HttpResponse(json.dumps(f"{len(pks)} Leads of {event_obj.name} is Assigned to {assignee_obj.username.upper()} of {branch_obj.branch_name} Branch."),content_type="application/json", status=200)
 
