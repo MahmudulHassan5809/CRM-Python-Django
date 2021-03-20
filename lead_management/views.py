@@ -193,7 +193,7 @@ class LeadListView(LoginRequiredMixin,generic.ListView):
 	    return context
 
 
-class TaskAssignView(LoginRequiredMixin,View):
+class TaskManagementView(LoginRequiredMixin,View):
 	def get(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
 		lead_type = self.kwargs.get('type',None)
@@ -222,21 +222,49 @@ class TaskAssignView(LoginRequiredMixin,View):
 
 	def post(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
-		pks  = request.POST.getlist("selection")
-		branch_id = request.POST.get("branch")
-		assignee_id = request.POST.get("assignee")
+		lead_type = self.kwargs.get('type',None)
+		pks  = request.POST.getlist("selection",None)
+		branch_id = request.POST.get("branch",None)
+		assignee_id = request.POST.get("assignee",None)
 
-		event_obj = get_object_or_404(Event,id=event_id)
-		assignee_obj = get_object_or_404(User,id=assignee_id)
-		branch_obj = get_object_or_404(Branch,id=branch_id)
 
-		print(request.POST)
+		print(event_id,lead_type,pks,branch_id,type(assignee_id))
+
+
+		event_obj = None
+		assignee_obj = None
+		branch_obj = None
+		if event_id != '':
+			event_obj = get_object_or_404(Event,id=event_id)
+		if assignee_id:
+			assignee_obj = get_object_or_404(User,id=assignee_id)
+		if branch_id:
+			branch_obj = get_object_or_404(Branch,id=branch_id)
+
+
+		if len(pks) > 0:
+			if lead_type == "unassigned" and event_obj and assignee_obj and branch_obj: # Lead type unassigned that means we need to assigned these unassigned task to some one
+				for pk in pks:
+					TaskAssign.objects.create(lead_id=pk,branch_id=branch_id,assignee_id=assignee_id,event_id=event_id)
+
+				Lead.objects.filter(id__in=pks).update(assigned=True)
+				message = f"{len(pks)} Leads of {event_obj.name} is Assigned to {assignee_obj.username.upper()} of {branch_obj.branch_name} Branch."
+
+			elif lead_type == "assigned" and event_obj and assignee_obj and branch_obj: # Lead type assigned and new branch and new assignee added that means we need to reassigned these assigned task to new one
+				TaskAssign.objects.filter(lead_id__in=pks).update(branch_id=branch_id,assignee_id=assignee_id)
+				message = f"{len(pks)} Leads of {event_obj.name} is ResignedAssigned to {assignee_obj.username.upper()} of {branch_obj.branch_name} Branch."
+
+			elif lead_type == 'remove_task' and event_obj:
+				TaskAssign.objects.filter(lead_id__in=pks).delete()
+				Lead.objects.filter(id__in=pks).update(assigned=False)
+				message = f"{len(pks)} Leads of {event_obj.name} is removed from tasklist"
+			else:
+				print("Here")
+			status = 200
+		else:
+			message = f"Please Select Some Students And Select Branch & User"
+			status = 400
 		
-		for pk in pks:
-			TaskAssign.objects.create(lead_id=pk,branch_id=branch_id,assignee_id=assignee_id,event_id=event_id)
-
-		Lead.objects.filter(id__in=pks).update(assigned=True)
-		
-		return HttpResponse(json.dumps(f"{len(pks)} Leads of {event_obj.name} is Assigned to {assignee_obj.username.upper()} of {branch_obj.branch_name} Branch."),content_type="application/json", status=200)
+		return HttpResponse(json.dumps(message),content_type="application/json", status=status)
 
 	

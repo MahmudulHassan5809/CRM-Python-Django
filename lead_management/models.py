@@ -98,6 +98,6 @@ class TaskAssign(models.Model):
         sort=True)
 
 	event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name='event_tasks')
-	lead = models.ForeignKey(Lead,on_delete=models.CASCADE,related_name='lead_taks')
+	lead = models.OneToOneField(Lead,on_delete=models.CASCADE,related_name='lead_task')
 	
 	status = models.CharField(max_length=20,choices=TASK_STATUS_CHOICE,default='NEW')

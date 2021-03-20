@@ -22,9 +22,9 @@
         <div class="card-body">
             <ul class="nav nav-tabs nav-tabs-top">
                 <li class="nav-item"><a class="nav-link {% if lead_type == 'unassigned' %}active{% endif %}" 
-                    href="{% url 'lead_management:task_assign' event_id  'unassigned' %}">Unassigned <span class="badge badge-primary">({{unassigned_count}})</span> </a></li>
+                    href="{% url 'lead_management:task_management' event_id  'unassigned' %}">Unassigned <span class="badge badge-primary">({{unassigned_count}})</span> </a></li>
                 <li class="nav-item"><a class="nav-link {% if lead_type == 'assigned' %}active{% endif %}" 
-                    href="{% url 'lead_management:task_assign' event_id  'assigned' %}">Assigned <span class="badge badge-primary">({{assigned_count}})</span></a></li>
+                    href="{% url 'lead_management:task_management' event_id  'assigned' %}">Assigned <span class="badge badge-primary">({{assigned_count}})</span></a></li>
                 
             </ul>
         </div>
@@ -41,7 +41,7 @@
 
     <div class="card-body">
         <div class="table-responsive">
-            <form method="post" id="post-form">
+            <form id="post-form">
             {% csrf_token %}
 
             
@@ -49,14 +49,26 @@
             {% render_table table %}
                 
                
-                    <a href="#" data-toggle="modal" data-target="#add_new_event" class="btn mb-3 btn-primary btn-sm mt-3">
-                        <i class="fas fa-plus"></i> Assign Task
-                    </a>
+                    {% if lead_type == 'unassigned' %}
+                        <a href="#" data-toggle="modal" data-target="#task_assigned_unassgined" class="btn mb-3 btn-primary btn-sm mt-3">
+                            <i class="fas fa-plus"></i> Assign Task
+                        </a>
+                    {% elif lead_type == 'assigned' %}
+                        <a href="#" data-toggle="modal" data-target="#task_assigned_unassgined" class="btn mb-3 btn-primary btn-sm mt-3">
+                            <i class="fas fa-plus"></i> ReAssigned
+                        </a>
+
+                       <a href="#" data-toggle="modal" data-target="#remove_task" class="btn mb-3 btn-danger btn-sm mt-3">
+                            <i class="fas fa-trash"></i> Remove Task
+                        </a>
+                       
+                    {% endif %}
+                    
                
                 
            
 
-                <div class="modal custom-modal fade" id="add_new_event">
+                <div class="modal custom-modal fade" id="task_assigned_unassgined">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -68,14 +80,52 @@
                                     {{task_assign_form.media.js}}
                                     {{task_assign_form|crispy}}
                                     <div class="submit-section">
-                                        <button type="submit" class="btn btn-primary  save-categorysubmit-btn">Save</button>
+                                        <button type="submit" class="btn btn-primary  save-categorysubmit-btn modal-save-button">Save</button>
                                     </div>
                                 </div>
 
                                 <div class="modal-body-check d-none"></div>
+
+                                <div class="modal-body-cross d-none text-danger text-center">
+                                   <i class="fas fa-times fa-5x"></i> 
+                                </div>
                                 
 
                                 <div class="msg font-weight-bold"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="modal custom-modal fade" id="remove_task">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Remove Task</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="task-remove-modal-body">
+                                    <div class="submit-section">
+                                        <p>
+                                            Are Youe Sure?
+                                        </p>
+
+                                        <button type="submit" class="btn btn-danger  save-categorysubmit-btn remove-task-button">Remove</button>
+                                    </div>
+                                </div>
+
+                                <div class="task-remove-modal-check d-none text-success text-center">
+                                    <i class="fas fa-check fa-5x"></i> 
+                                </div>
+                                <div class="task-remove-modal-cross d-none text-danger text-center">
+                                   <i class="fas fa-times fa-5x"></i> 
+                                </div>
+                                
+
+                                <div class="task-remove-msg font-weight-bold"></div>
                             </div>
                         </div>
                     </div>
@@ -103,15 +153,14 @@
 
 
 
-        $('#post-form').on('submit', function(event){
+        $('.modal-save-button').on('click', function(event){
             event.preventDefault();
             var form_data = $("#post-form").serialize();
             
             $(".modal-body-form").hide()
-
             $.ajax({
                 type:'POST',
-                url:'{% url "lead_management:task_assign" event_id lead_type %}',
+                url:'{% url "lead_management:task_management" event_id lead_type %}',
                 data:form_data,
                 success:function(data){
                     console.log(data)
@@ -123,13 +172,48 @@
                 },
                 error : function(xhr,errmsg,err) {
                     console.log(xhr.status + ": " + xhr.responseText);
+                    $(".modal-title").text("Something went wrong!")
+                    $(".modal-body-cross").removeClass("d-none")
+                    $(".msg").text(xhr.responseText)
                 }
             });
         }); 
 
 
+        $('.remove-task-button').on('click', function(event){
+            event.preventDefault();
+            var form_data = $("#post-form").serialize();
+
+            $(".task-remove-modal-body").hide()
+            $.ajax({
+                type:'POST',
+                url:'{% url "lead_management:task_management" event_id 'remove_task' %}',
+                data:form_data,
+                success:function(data){
+                    console.log(data)
+                    $(".task-remove-modal-check").removeClass("d-none")
+                    $(".modal-title").text("Successful!")
+                    $(".task-remove-msg").text(data)
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                    $(".modal-title").text("Something went wrong!")
+                    $(".task-remove-modal-cross").removeClass("d-none")
+                    $(".task-remove-msg").text(xhr.responseText)
+                }
+            });
+            
+        }); 
+
+
+
+
         $(".close").on("click",function(e) {
             window.location.reload()
+        })
+
+        $('.modal').on('hidden.bs.modal', function (e) {
+          window.location.reload()
         })   
 
     </script>
