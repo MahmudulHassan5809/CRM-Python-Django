@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block content %}
+    <div class="card">
+
+    <div class="card-header">
+        <div class="float-left">
+            <h5 class="card-title">{{title}}</h5>
+        </div>
+        <div class="float-right top-nav-search">
+            <form method="GET" action="{% url 'lead_management:event_list' %}">
+                    <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-nowrap mb-0 task-table">
+                <thead>
+                    <tr>
+                        
+                        <th>Event Name</th>
+                        <th>Event Description</th>
+                        <th>Event Date</th>
+                        <th>Event Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in event_list %}
+                        <tr>
+                            <td>{{event.event.name}}</td>
+                            <td>{{event.event.description}}</td>
+                            <td>
+                                {{event.event.event_date}}
+                            </td>
+
+                            <td>
+                                {% if event.active %}
+                                    Active
+                                {% else %}
+                                    Inactive
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{% url 'lead_management:lead_list' event.id %}" class="btn btn-primary btn-sm">View Leads</a>
+                                <a href="{% url 'lead_management:lead_management' event.id  'unassigned' %}" class="btn btn-primary btn-sm">Assign Task</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

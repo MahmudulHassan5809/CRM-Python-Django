@@ -7,7 +7,7 @@ import uuid
 
 USERTYPE_CHOICES = (
     ('SUPER_ADMIN', 'Super Admin'),
-    ('SENIOR_COUNSELOR ', 'Senior Counselor'),
+    ('SENIOR_COUNSELOR', 'Senior Counselor'),
     ('COUNSELOR', 'Counselor'),
     ('RECEPTIONIST', 'Receptionist'),
 )

@@ -68,6 +68,14 @@ class Lead(models.Model):
 
 
 
+class TaskAssignQuerySet(models.QuerySet):
+    def filter_by_event(self,event_id):
+        return self.filter(event__id=event_id)
+
+    def filter_by_is_assignee(self,user_id):
+        return self.filter(assignee_id=user_id)
+
+
 class TaskAssign(models.Model):
     TASK_STATUS_CHOICE = [
     	('Not Available', (
@@ -99,3 +107,5 @@ class TaskAssign(models.Model):
         auto_choose=True,
         sort=True)
     status = models.CharField(max_length=20,choices=TASK_STATUS_CHOICE,default='NEW')
+
+    objects = TaskAssignQuerySet.as_manager()

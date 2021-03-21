@@ -19,20 +19,12 @@ class TaskAssignTable(tables.Table):
 	# 	attrs = AttributeDict(default, **(specific or general or {}))
 	# 	return mark_safe(f"<input  %s/>" % attrs.as_html())
 
-	# def render_assignee(self, value, bound_column, record):
-	# 	try:
-	# 		return record.lead_task.assignee.username
-	# 	except:
-	# 		return 'Not Assigned'
-		# print(record.lead_task)
-        # default = {"type": "text", "name": bound_column.name, "value": record.id}
-        # general = self.attrs.get("input")
-        # specific = self.attrs.get("td__input")
-        # attrs = AttributeDict(default, **(specific or general or {}))
-        # return mark_safe("<input %s/>" % attrs.as_html())
+	
 
 
 	class Meta:
 		model = Lead
-		template_name = "django_tables2/bootstrap.html"
+		template_name = "django_tables2/bootstrap-responsive.html"
 		fields = ('name','email','phone_number','lead_task__assignee__username','selection')
+
+

@@ -1,0 +1,22 @@
+{% extends "login_base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+
+                    <div class="loginbox">
+
+                        <div class="login-right">
+                            <div class="login-right-wrap">
+                                <h1>Logout</h1>
+                                <p class="account-subtitle">Access to your dashboard <a href="{% url 'accounts:login' %}">Login</a></p>
+
+                                
+
+                            </div>
+                        </div>
+                    </div>
+{% endblock content %}

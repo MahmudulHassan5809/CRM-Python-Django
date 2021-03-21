@@ -17,7 +17,7 @@ urlpatterns = [
 
 
     # Super Admin Urls
-    path('super/user/dashboard/', views.SuperUserDashboardView.as_view(),name='superuser_dashboard'),
+    # path('super/user/dashboard/', views.SuperUserDashboardView.as_view(),name='superuser_dashboard'),
     path('user/add/',views.AddUserView.as_view(),name="add_user"),
     path('user/user-list/',views.UserListView.as_view(),name="user_list"),
     path('user/update/<int:pk>/',views.UserUpdateView.as_view(),name="user_update"),

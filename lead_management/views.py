@@ -15,7 +15,10 @@ import xlrd
 import pandas as pd
 import mimetypes
 import json
-from django_tables2 import SingleTableView
+from django_tables2 import SingleTableView,LazyPaginator
+
+
+from accounts.mixins import SuperAdminRequiredMixin
 
 
 from branch.models import Branch
@@ -28,10 +31,10 @@ from .tables import TaskAssignTable
 
 User = get_user_model()
 
-class CreateEvent(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
+class CreateEvent(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.CreateView):
 	model = Event
 	form_class = EventCreateForm
-	template_name = "lead_management/event/create_event.html"
+	template_name = "lead_management/event/super_user/create_event.html"
 	success_message = "Event created successfully"
 
 	def get_success_url(self,**kwargs):
@@ -48,11 +51,12 @@ class CreateEvent(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
 class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 	model = Event
 	contect_object_name = "event_list"
-	template_name = "lead_management/event/event_list.html"
+	template_name = "lead_management/event/super_user/event_list.html"
 	paginate_by = 10
 
 	def get_queryset(self,**kwargs):
 		qs = super().get_queryset()
+		
 		query = self.request.GET.get('query',None)
 		if query:
 			qs = qs.filter_by_query(query)
@@ -68,7 +72,7 @@ class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 
 
 
-class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
+class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.CreateView):
 	model = Lead
 	form_class = LeadCreateForm
 	template_name = "lead_management/lead/create_lead.html"
@@ -103,7 +107,7 @@ class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView
 
 
 
-class CreateBulkLeadView(LoginRequiredMixin,generic.FormView):
+class CreateBulkLeadView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.FormView):
 	form_class = BulkLeadCreateForm
 	template_name = "lead_management/lead/create_bulk_lead.html"
 	success_message = "Lead created successfully"
@@ -165,7 +169,7 @@ class CreateBulkLeadView(LoginRequiredMixin,generic.FormView):
 	    return context
 
 
-class LeadListView(LoginRequiredMixin,generic.ListView):
+class LeadListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
 	model = Lead
 	contect_object_name = "lead_list"
 	template_name = "lead_management/lead/lead_list.html"
@@ -193,7 +197,7 @@ class LeadListView(LoginRequiredMixin,generic.ListView):
 	    return context
 
 
-class LeadManagementView(LoginRequiredMixin,SingleTableView):
+class LeadManagementView(LoginRequiredMixin,SuperAdminRequiredMixin,SingleTableView):
 	# paginator_class = LazyPaginator
 	def get(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
@@ -208,7 +212,7 @@ class LeadManagementView(LoginRequiredMixin,SingleTableView):
 
 
 		table = TaskAssignTable(qs)
-		# table.paginate(page=request.GET.get("page", 1), per_page=25)
+		table.paginate(paginator_class = LazyPaginator,page=request.GET.get("page", 1), per_page=25)
 		task_assign_form = TaskAssignForm()
 		context = {
 			'table' : table,
@@ -270,3 +274,14 @@ class LeadManagementView(LoginRequiredMixin,SingleTableView):
 		return HttpResponse(json.dumps(message),content_type="application/json", status=status)
 
 
+
+
+
+class UserEventListView(LoginRequiredMixin,View):
+	def get(self,request,*args,**kwargs):
+		event_list = TaskAssign.objects.filter_by_is_assignee(request.user.id).select_related("event").only('event__name','event__description','event__event_date','event__active')
+		context = {
+			'title' : 'User Event List',
+			'event_list' : event_list
+		}
+		return render(request,'lead_management/event/user/event_list.html',context)

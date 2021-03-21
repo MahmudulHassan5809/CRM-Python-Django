@@ -14,6 +14,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 
 
+from accounts.mixins import SuperAdminRequiredMixin
+
 from .forms import CustomUserCreationForm
 from django.contrib.auth import get_user_model
 
@@ -46,21 +48,26 @@ class LoginView(SuccessMessageMixin, LoginView):
 
 class DashboardView(LoginRequiredMixin,View):
     def get(self,request,*arg,**kwargs):
-        if request.user.is_superuser:
-            return redirect('accounts:superuser_dashboard')
+        if request.user.is_superuser and request.user.active and request.user.user_type == 'SUPER_ADMIN':
+            context = {
+                'title' : 'SuperAdmin'
+            }
+            return render(request,'accounts/super_user/dashboard.html')
+        elif request.user.active and request.user.user_type == 'SENIOR_COUNSELOR':
+            context = {
+                'title' : 'Dashboard'
+            }
+
+            return render(request,'accounts/user/dashboard.html')
+        else:
+            print(request.user,request.user.active,request.user.user_type)
 
 
 
-class SuperUserDashboardView(LoginRequiredMixin,View):
-    def get(self,request,*arg,**kwargs):
-        context = {
-            'title' : 'SuperAdmin'
-        }
+        
+        
 
-        return render(request,'accounts/super_user/dashboard.html')
-
-
-class AddUserView(LoginRequiredMixin,View):
+class AddUserView(LoginRequiredMixin,SuperAdminRequiredMixin,View):
     def get(self,request,*arg,**kwargs):
         context = {
             'title' : 'Add User',
@@ -83,7 +90,7 @@ class AddUserView(LoginRequiredMixin,View):
             return render(request,'accounts/super_user/user_management/add_user.html',context)
 
 
-class UserListView(LoginRequiredMixin,generic.ListView):
+class UserListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
     model = User
     context_object_name = 'user_list'
     template_name = 'accounts/super_user/user_management/user_list.html'
@@ -95,7 +102,7 @@ class UserListView(LoginRequiredMixin,generic.ListView):
         return context
 
 
-class UserUpdateView(LoginRequiredMixin,SuccessMessageMixin,generic.UpdateView):
+class UserUpdateView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.UpdateView):
     model = User
     context_object_name = 'user_obj'
     fields = ['email', 'username','user_type']
@@ -113,7 +120,7 @@ class UserUpdateView(LoginRequiredMixin,SuccessMessageMixin,generic.UpdateView):
         return context
 
 
-class UserDeleteView(SuccessMessageMixin,LoginRequiredMixin,generic.DeleteView):
+class UserDeleteView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.DeleteView):
     model = User
     template_name = 'accounts/super_user/user_management/delete_user.html'
     success_message = 'Information deleted successfully!'

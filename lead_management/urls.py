@@ -15,8 +15,9 @@ urlpatterns = [
 	path('create/single-lead/', views.CreateSingleLead.as_view(),name='create_single_lead'),
 	path('lead-list/',views.LeadListView.as_view(),name="lead_list"),
 	path('lead-list/<int:event_id>/',views.LeadListView.as_view(),name="lead_list"),
-
-
 	path('management/<int:event_id>/<str:type>', views.LeadManagementView.as_view(),name='lead_management'),
+
+
+	path('user/event/', views.UserEventListView.as_view(),name='user_event_list'),
 
 ]

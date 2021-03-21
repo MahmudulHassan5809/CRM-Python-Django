@@ -6,40 +6,42 @@
                                 <a href="{% url 'accounts:dashboard' %}"><i data-feather="home"></i> <span>Dashboard</span></a>
                             </li>
 
-                            <li class="menu-title"><span>Main</span></li>
+                            
 
-                            <li class="submenu">
-                                <a href="#"><i data-feather="users"></i> <span> Users</span> <span class="menu-arrow"></span></a>
-                                <ul>
-                                    <li><a href="{% url 'accounts:add_user' %}">Add User</a></li>
-                                    <li><a href="{% url 'accounts:user_list' %}">All User</a></li>
+                            {% if user.is_authenticated and user.active and user.is_superuser and user.user_type == 'SUPER_ADMIN' %}
+                                <li class="menu-title"><span>Main</span></li>
 
-                                </ul>
-                            </li>
+                                <li class="submenu">
+                                    <a href="#"><i data-feather="users"></i> <span> Users</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a href="{% url 'accounts:add_user' %}">Add User</a></li>
+                                        <li><a href="{% url 'accounts:user_list' %}">All User</a></li>
 
-                            <li class="menu-title"><span>Branch</span></li>
+                                    </ul>
+                                </li>
 
-                            <li class="submenu">
-                                <a href="#"><i data-feather="briefcase"></i> <span> Branch</span> <span class="menu-arrow"></span></a>
-                                <ul>
-                                    <li><a href="{% url 'branch:create_branch' %}">Create Branch</a></li>
-                                    <li><a href="{% url 'branch:branch_list' %}">Branch List</a></li>
-                                </ul>
-                            </li>
+                                <li class="menu-title"><span>Branch</span></li>
 
+                                <li class="submenu">
+                                    <a href="#"><i data-feather="briefcase"></i> <span> Branch</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a href="{% url 'branch:create_branch' %}">Create Branch</a></li>
+                                        <li><a href="{% url 'branch:branch_list' %}">Branch List</a></li>
+                                    </ul>
+                                </li>
 
-                            <li class="menu-title"><span>Event Management</span></li>
+                                <li class="menu-title"><span>Event Management</span></li>
 
-                            <li class="submenu">
-                                <a href="#"><i data-feather="briefcase"></i> <span> Event Management</span> <span class="menu-arrow"></span></a>
-                                <ul>
-                                    <li><a href="{% url 'lead_management:create_event' %}">Create Event</a></li>
-                                    <li><a href="{% url 'lead_management:event_list' %}">Event List</a></li>
-                                    
-                                </ul>
-                            </li>
+                                    <li class="submenu">
+                                        <a href="#"><i data-feather="briefcase"></i> <span> Event Management</span> <span class="menu-arrow"></span></a>
+                                        <ul>
+                                            <li><a href="{% url 'lead_management:create_event' %}">Create Event</a></li>
+                                            <li><a href="{% url 'lead_management:event_list' %}">Event List</a></li>
+                                            
+                                        </ul>
+                                    </li>
 
-                            <li class="menu-title"><span>Lead Management</span></li>
+                                    <li class="menu-title"><span>Lead Management</span></li>
 
                             <li class="submenu">
                                 <a href="#"><i data-feather="briefcase"></i> <span> Lead Management</span> <span class="menu-arrow"></span></a>
@@ -51,6 +53,22 @@
                                 </ul>
                             </li>
 
+                            {% elif  user.is_authenticated and user.active  and user.user_type == 'SENIOR_COUNSELOR' %}
+                                <li class="submenu">
+                                    <a href="#"><i data-feather="briefcase"></i> <span> Task Management</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a href="{% url 'lead_management:user_event_list' %}">Event List</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            
+                            
+
+
+                            
+
+                            
                             
 
 
