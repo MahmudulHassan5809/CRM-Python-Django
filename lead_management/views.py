@@ -29,7 +29,7 @@ from .tables import TaskAssignTable
 User = get_user_model()
 
 class CreateEvent(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
-	model = Event 
+	model = Event
 	form_class = EventCreateForm
 	template_name = "lead_management/event/create_event.html"
 	success_message = "Event created successfully"
@@ -46,7 +46,7 @@ class CreateEvent(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
 
 
 class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
-	model = Event 
+	model = Event
 	contect_object_name = "event_list"
 	template_name = "lead_management/event/event_list.html"
 	paginate_by = 10
@@ -59,7 +59,7 @@ class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 
 		return qs
 
-	
+
 
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
@@ -69,7 +69,7 @@ class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 
 
 class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView):
-	model = Lead 
+	model = Lead
 	form_class = LeadCreateForm
 	template_name = "lead_management/lead/create_lead.html"
 	success_message = "Lead created successfully"
@@ -94,7 +94,7 @@ class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,generic.CreateView
 		obj.save()
 		return redirect('lead_management:lead_list',obj.event_id)
 
-	
+
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Create Lead"
@@ -140,7 +140,7 @@ class CreateBulkLeadView(LoginRequiredMixin,generic.FormView):
 			last_completed_education = row['last_completed_education']
 			ielts_score = row['ielts_score']
 			remarks = row['remarks']
-			
+
 			Lead.objects.create(
 				created_by=self.request.user,
 				event = event,
@@ -166,7 +166,7 @@ class CreateBulkLeadView(LoginRequiredMixin,generic.FormView):
 
 
 class LeadListView(LoginRequiredMixin,generic.ListView):
-	model = Lead 
+	model = Lead
 	contect_object_name = "lead_list"
 	template_name = "lead_management/lead/lead_list.html"
 	paginate_by = 10
@@ -184,7 +184,7 @@ class LeadListView(LoginRequiredMixin,generic.ListView):
 			qs = qs.filter_query(query)
 
 		return qs
-	
+
 
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
@@ -193,20 +193,22 @@ class LeadListView(LoginRequiredMixin,generic.ListView):
 	    return context
 
 
-class TaskManagementView(LoginRequiredMixin,View):
+class LeadManagementView(LoginRequiredMixin,SingleTableView):
+	# paginator_class = LazyPaginator
 	def get(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
 		lead_type = self.kwargs.get('type',None)
-		
+
 		if lead_type == 'unassigned':
-			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(False)
+			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(False).select_related("lead_task__assignee")
 		elif lead_type == 'assigned':
-			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True)
+			qs = Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True).select_related("lead_task__assignee")
 		else:
-			qs = Lead.objects.filter_by_event(event_id)
-		
+			qs = Lead.objects.filter_by_event(event_id).select_related("lead_task__assignee")
+
 
 		table = TaskAssignTable(qs)
+		# table.paginate(page=request.GET.get("page", 1), per_page=25)
 		task_assign_form = TaskAssignForm()
 		context = {
 			'table' : table,
@@ -218,7 +220,7 @@ class TaskManagementView(LoginRequiredMixin,View):
 			'assigned_count' : Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True).count()
 		}
 
-		return render(request,'lead_management/task/task_assign.html',context)
+		return render(request,'lead_management/lead/lead_management.html',context)
 
 	def post(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
@@ -264,7 +266,7 @@ class TaskManagementView(LoginRequiredMixin,View):
 		else:
 			message = f"Please Select Some Students And Select Branch & User"
 			status = 400
-		
+
 		return HttpResponse(json.dumps(message),content_type="application/json", status=status)
 
-	
+

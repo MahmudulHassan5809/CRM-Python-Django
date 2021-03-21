@@ -1,0 +1,51 @@
+EduCon CRM
+
+Lead Details:
+General Info
+    ⁃   Full Name
+    ⁃   Phone Number
+    ⁃   Email Address
+    ⁃   Present Address
+    ⁃   Last Completed Education
+    ⁃   Current Ongoing Education
+    ⁃   Preferred Destination
+    ⁃   IELTS Score
+    ⁃   Status (New / Unavailable / Positive Response / Negative Response / Duplicate)
+    ⁃   Status Description
+    ⁃   Note
+
+Student Details:
+Stage 1: Information Collection
+    ⁃   All Information From Lead Details
+    ⁃   Created Email Credentials > Email Address, Password
+    ⁃   Created Portal Credentials > Portal Name, Portal Link, Country, Username / Email Address, Password
+Stage 2: Documents Checklist
+    ⁃   Passport
+    ⁃   SSC / O Levels Certificate
+    ⁃   SSC / O Levels Transcript
+    ⁃   HSC / A Levels Certificate
+    ⁃   HSC / A Levels Transcript
+    ⁃   Diploma Certificate
+    ⁃   Diploma Transcript
+    ⁃   Bachelors Certificate
+    ⁃   Bachelors Transcript
+    ⁃   Masters Certificate
+    ⁃   Masters Transcript
+    ⁃   Language Proficiency Certificate
+    ⁃   SOP / Letter of Motivation
+    ⁃   Recommendation Letter 1
+    ⁃   Recommendation Letter 2
+    ⁃   CV
+    ⁃   Job Experience Letter
+Stage 3: Application Status
+    ⁃   Documents Prepared
+    ⁃   Application Done
+    ⁃   Documents Uploaded
+    ⁃   Documents Sent Via Post
+    ⁃   Offer Letter Received
+    ⁃   Tuition Fess Sent
+Stage 4: Visa Status
+    ⁃   Documents Prepared
+    ⁃   Application Done
+    ⁃   Visa Received
+Stage 5: Finalisation

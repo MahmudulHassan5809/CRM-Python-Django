@@ -18,14 +18,14 @@
 {% block content %}
 
     <div class="card bg-white">
-                                        
+
         <div class="card-body">
             <ul class="nav nav-tabs nav-tabs-top">
-                <li class="nav-item"><a class="nav-link {% if lead_type == 'unassigned' %}active{% endif %}" 
-                    href="{% url 'lead_management:task_management' event_id  'unassigned' %}">Unassigned <span class="badge badge-primary">({{unassigned_count}})</span> </a></li>
-                <li class="nav-item"><a class="nav-link {% if lead_type == 'assigned' %}active{% endif %}" 
-                    href="{% url 'lead_management:task_management' event_id  'assigned' %}">Assigned <span class="badge badge-primary">({{assigned_count}})</span></a></li>
-                
+                <li class="nav-item"><a class="nav-link {% if lead_type == 'unassigned' %}active{% endif %}"
+                    href="{% url 'lead_management:lead_management' event_id  'unassigned' %}">Unassigned <span class="badge badge-primary">({{unassigned_count}})</span> </a></li>
+                <li class="nav-item"><a class="nav-link {% if lead_type == 'assigned' %}active{% endif %}"
+                    href="{% url 'lead_management:lead_management' event_id  'assigned' %}">Assigned <span class="badge badge-primary">({{assigned_count}})</span></a></li>
+
             </ul>
         </div>
     </div>
@@ -35,20 +35,20 @@
                 <div class="float-left">
                     <h5 class="card-title">Assign Leads</h5>
                 </div>
-               
+
             </div>
-    
+
 
     <div class="card-body">
         <div class="table-responsive">
             <form id="post-form">
             {% csrf_token %}
 
-            
+
 
             {% render_table table %}
-                
-               
+
+
                     {% if lead_type == 'unassigned' %}
                         <a href="#" data-toggle="modal" data-target="#task_assigned_unassgined" class="btn mb-3 btn-primary btn-sm mt-3">
                             <i class="fas fa-plus"></i> Assign Task
@@ -61,12 +61,12 @@
                        <a href="#" data-toggle="modal" data-target="#remove_task" class="btn mb-3 btn-danger btn-sm mt-3">
                             <i class="fas fa-trash"></i> Remove Task
                         </a>
-                       
+
                     {% endif %}
-                    
-               
-                
-           
+
+
+
+
 
                 <div class="modal custom-modal fade" id="task_assigned_unassgined">
                     <div class="modal-dialog modal-dialog-centered">
@@ -87,9 +87,9 @@
                                 <div class="modal-body-check d-none"></div>
 
                                 <div class="modal-body-cross d-none text-danger text-center">
-                                   <i class="fas fa-times fa-5x"></i> 
+                                   <i class="fas fa-times fa-5x"></i>
                                 </div>
-                                
+
 
                                 <div class="msg font-weight-bold"></div>
                             </div>
@@ -118,12 +118,12 @@
                                 </div>
 
                                 <div class="task-remove-modal-check d-none text-success text-center">
-                                    <i class="fas fa-check fa-5x"></i> 
+                                    <i class="fas fa-check fa-5x"></i>
                                 </div>
                                 <div class="task-remove-modal-cross d-none text-danger text-center">
-                                   <i class="fas fa-times fa-5x"></i> 
+                                   <i class="fas fa-times fa-5x"></i>
                                 </div>
-                                
+
 
                                 <div class="task-remove-msg font-weight-bold"></div>
                             </div>
@@ -133,7 +133,7 @@
 
 
             </form>
-            
+
         </div>
     </div>
 </div>
@@ -146,7 +146,7 @@
         $('th input[type="checkbox"]').change( function () {
             $( 'tr td input[type="checkbox"]' ).prop('checked', this.checked)
         })
-    
+
 
         var event_id = "{{ event_id|safe  }}"
         var lead_type = "{{ lead_type|safe }}"
@@ -156,11 +156,11 @@
         $('.modal-save-button').on('click', function(event){
             event.preventDefault();
             var form_data = $("#post-form").serialize();
-            
+
             $(".modal-body-form").hide()
             $.ajax({
                 type:'POST',
-                url:'{% url "lead_management:task_management" event_id lead_type %}',
+                url:'{% url "lead_management:lead_management" event_id lead_type %}',
                 data:form_data,
                 success:function(data){
                     console.log(data)
@@ -177,7 +177,7 @@
                     $(".msg").text(xhr.responseText)
                 }
             });
-        }); 
+        });
 
 
         $('.remove-task-button').on('click', function(event){
@@ -187,7 +187,7 @@
             $(".task-remove-modal-body").hide()
             $.ajax({
                 type:'POST',
-                url:'{% url "lead_management:task_management" event_id 'remove_task' %}',
+                url:'{% url "lead_management:lead_management" event_id 'remove_task' %}',
                 data:form_data,
                 success:function(data){
                     console.log(data)
@@ -202,8 +202,8 @@
                     $(".task-remove-msg").text(xhr.responseText)
                 }
             });
-            
-        }); 
+
+        });
 
 
 
@@ -214,7 +214,7 @@
 
         $('.modal').on('hidden.bs.modal', function (e) {
           window.location.reload()
-        })   
+        })
 
     </script>
 {% endblock script %}
@@ -222,5 +222,5 @@
 
 
 
-    
+
 

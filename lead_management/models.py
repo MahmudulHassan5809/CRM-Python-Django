@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth import get_user_model 
+from django.contrib.auth import get_user_model
 from smart_selects.db_fields import ChainedForeignKey
 
 
@@ -41,7 +41,7 @@ class LeadQuerySet(models.QuerySet):
 
     def filter_by_is_assigned(self,bool):
     	return self.filter(assigned=bool)
-    
+
 
 
 class Lead(models.Model):
@@ -61,7 +61,7 @@ class Lead(models.Model):
 	objects = LeadQuerySet.as_manager()
 
 	def __str__(self):
-		return self.name 
+		return self.name
 
 	class Meta:
 		verbose_name_plural = '1. Leads'
@@ -69,25 +69,27 @@ class Lead(models.Model):
 
 
 class TaskAssign(models.Model):
-	TASK_STATUS_CHOICE = [
-		('Not Available', (
+    TASK_STATUS_CHOICE = [
+    	('Not Available', (
             ('PHONE_OFF', 'Phone Off'),
             ('NO ANSWER', 'No Answer'),
             ('CALL_FORWARDED', 'Call Forwarded'),
             ('INCORREET_NUMBER', 'Incorrect Number'),
             ('OTHER', 'Other'),
         )
-	    ),
-	    ('Video', (
-	            ('vhs', 'VHS Tape'),
-	            ('dvd', 'DVD'),
-	        )
-	    ),
-	    ('NEW', 'New'),
+        ),
+        ('Video', (
+                ('vhs', 'VHS Tape'),
+                ('dvd', 'DVD'),
+            )
+        ),
+        ('NEW', 'New'),
 
-	]
-	branch = models.ForeignKey('branch.Branch',on_delete=models.CASCADE)
-	assignee = ChainedForeignKey(
+    ]
+    branch = models.ForeignKey('branch.Branch',on_delete=models.CASCADE)
+    event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name='event_tasks')
+    lead = models.OneToOneField(Lead,on_delete=models.CASCADE,related_name='lead_task')
+    assignee = ChainedForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='user_tasks',
@@ -96,8 +98,4 @@ class TaskAssign(models.Model):
         show_all=False,
         auto_choose=True,
         sort=True)
-
-	event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name='event_tasks')
-	lead = models.OneToOneField(Lead,on_delete=models.CASCADE,related_name='lead_task')
-	
-	status = models.CharField(max_length=20,choices=TASK_STATUS_CHOICE,default='NEW')
+    status = models.CharField(max_length=20,choices=TASK_STATUS_CHOICE,default='NEW')

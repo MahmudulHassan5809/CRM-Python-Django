@@ -14,7 +14,7 @@ urlpatterns = [
     path('', LoginView.as_view(), name='login'),
     path('accounts/', include('accounts.urls',namespace='accounts')),
     path('branch/', include('branch.urls',namespace='branch')),
-    path('lead_management/', include('lead_management.urls',namespace='lead_management')),
+    path('lead/', include('lead_management.urls',namespace='lead_management')),
 
 
 
