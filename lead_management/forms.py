@@ -11,10 +11,10 @@ from .models import Lead,Event,TaskAssign
 
 class EventCreateForm(ModelForm):
 	class Meta:
-		model = Event 
+		model = Event
 		exclude = ('active',)
 		js = ('admin/js/vendor/jquery/jquery.min.js', 'admin/js/jquery.init.js')
-	
+
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.fields['event_date'].widget = AdminDateWidget()
@@ -63,3 +63,31 @@ class TaskAssignForm(ModelForm):
 	class Meta:
 		model = TaskAssign
 		fields = ['branch','assignee']
+
+
+
+class ChangeLeadStatusForm(forms.ModelForm):
+	note = forms.CharField(required=True,widget=forms.Textarea())
+	class Meta:
+		model = Lead
+		fields = ['note','status']
+
+
+class LeadFilterByStatusForm(forms.Form):
+	LEAD_STATUS_CHOICE = [
+        ('Not Available', (
+            ('PHONE_OFF', 'Phone Off'),
+            ('NO ANSWER', 'No Answer'),
+            ('CALL_FORWARDED', 'Call Forwarded'),
+            ('INCORREET_NUMBER', 'Incorrect Number'),
+            ('OTHER', 'Other'),
+        )
+        ),
+        ('Video', (
+                ('vhs', 'VHS Tape'),
+                ('dvd', 'DVD'),
+            )
+        ),
+        ('NEW', 'New'),
+    ]
+	status = forms.ChoiceField(choices=LEAD_STATUS_CHOICE,required=True,label=False)

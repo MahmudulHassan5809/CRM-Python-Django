@@ -23,7 +23,7 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from .models import Lead,Event,TaskAssign
-from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm
+from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm,ChangeLeadStatusForm,LeadFilterByStatusForm
 from .tables import TaskAssignTable
 
 # Create your views here.
@@ -56,7 +56,7 @@ class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 
 	def get_queryset(self,**kwargs):
 		qs = super().get_queryset()
-		
+
 		query = self.request.GET.get('query',None)
 		if query:
 			qs = qs.filter_by_query(query)
@@ -75,7 +75,7 @@ class EventListView(SuccessMessageMixin,LoginRequiredMixin,generic.ListView):
 class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.CreateView):
 	model = Lead
 	form_class = LeadCreateForm
-	template_name = "lead_management/lead/create_lead.html"
+	template_name = "lead_management/lead/super_user/create_lead.html"
 	success_message = "Lead created successfully"
 
 
@@ -109,7 +109,7 @@ class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequired
 
 class CreateBulkLeadView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.FormView):
 	form_class = BulkLeadCreateForm
-	template_name = "lead_management/lead/create_bulk_lead.html"
+	template_name = "lead_management/lead/super_user/create_bulk_lead.html"
 	success_message = "Lead created successfully"
 
 	def form_valid(self,form):
@@ -172,7 +172,7 @@ class CreateBulkLeadView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.Form
 class LeadListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
 	model = Lead
 	contect_object_name = "lead_list"
-	template_name = "lead_management/lead/lead_list.html"
+	template_name = "lead_management/lead/super_user/lead_list.html"
 	paginate_by = 10
 
 	def get_queryset(self,**kwargs):
@@ -224,7 +224,7 @@ class LeadManagementView(LoginRequiredMixin,SuperAdminRequiredMixin,SingleTableV
 			'assigned_count' : Lead.objects.filter_by_event(event_id).filter_by_is_assigned(True).count()
 		}
 
-		return render(request,'lead_management/lead/lead_management.html',context)
+		return render(request,'lead_management/lead/super_user/lead_management.html',context)
 
 	def post(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
@@ -279,9 +279,97 @@ class LeadManagementView(LoginRequiredMixin,SuperAdminRequiredMixin,SingleTableV
 
 class UserEventListView(LoginRequiredMixin,View):
 	def get(self,request,*args,**kwargs):
-		event_list = TaskAssign.objects.filter_by_is_assignee(request.user.id).select_related("event").only('event__name','event__description','event__event_date','event__active')
+		event_id_list = list(TaskAssign.objects.filter_by_assignee(request.user.id).values_list("event__id",flat=True).distinct())
+		event_list = Event.objects.filter(id__in=event_id_list)
+		query = self.request.GET.get('query',None)
+		if query:
+			event_list = event_list.filter_by_query(query)
+		status = self.request.GET.get('status',None)
 		context = {
 			'title' : 'User Event List',
-			'event_list' : event_list
+			'event_list' : event_list,
 		}
 		return render(request,'lead_management/event/user/event_list.html',context)
+
+
+class UserLeadListView(LoginRequiredMixin,generic.ListView):
+	model = Lead
+	template_name = 'lead_management/lead/user/lead_list.html'
+	context_object_name = 'lead_list'
+	paginate_by = 10
+
+	def get_queryset(self,**kwargs):
+		qs = super().get_queryset()
+		event_id = self.kwargs.get('event_id',None)
+
+		if event_id:
+			lead_id_list = list(TaskAssign.objects.filter_by_event(event_id).filter_by_assignee(self.request.user.id).values_list('lead__id',flat=True))
+			qs = qs.filter(id__in=lead_id_list)
+
+			query = self.request.GET.get('query',None)
+			if query:
+				qs = qs.filter_query(query)
+
+			status = self.request.GET.get('status',None)
+			if status:
+				qs = qs.filter_by_status(status)
+		else:
+			qs = []
+
+		return qs
+
+
+
+	def get_context_data(self, **kwargs):
+	    context = super().get_context_data(**kwargs)
+	    context['title'] = "Lead List"
+	    context["event_id"] = self.kwargs.get('event_id',None)
+	    context["form"] = LeadFilterByStatusForm()
+	    return context
+
+
+
+class LeadDetailsView(LoginRequiredMixin,generic.DetailView):
+	model = Lead
+	context_object_name = 'lead_obj'
+	template_name = 'lead_management/lead/user/lead_details.html'
+
+
+	def get_context_data(self, **kwargs):
+	    context = super().get_context_data(**kwargs)
+	    context['title'] = "Lead Details"
+	    context['lead_id'] = self.kwargs.get("pk")
+	    context['form'] = ChangeLeadStatusForm()
+	    return context
+
+
+class GetListStatusView(LoginRequiredMixin,View):
+	def get(self,request,*args,**kwargs):
+		lead_id = self.kwargs.get('lead_id')
+		lead_obj = get_object_or_404(Lead,id=lead_id)
+		data = {
+			'note' : lead_obj.note,
+			'status' : lead_obj.status
+		}
+
+		return HttpResponse(json.dumps(data),content_type="application/json", status=200)
+
+
+
+
+class LeadStatusUpdateView(LoginRequiredMixin,View):
+	def post(self,request,*args,**kwargs):
+		lead_id = self.kwargs.get('lead_id')
+		form = ChangeLeadStatusForm(request.POST)
+
+		if form.is_valid():
+			note = form.cleaned_data.get('note')
+			status = form.cleaned_data.get('status')
+
+			lead_obj = get_object_or_404(Lead,id=lead_id)
+			lead_obj.status = status
+			lead_obj.note = note
+			lead_obj.save()
+			return HttpResponse(json.dumps(f"Lead Status Updated"),content_type="application/json", status=200)
+		else:
+			return HttpResponse(form.errors.as_json(), status=400)

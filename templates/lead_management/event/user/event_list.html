@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 
+
+
 {% block title %}
     {{ block.super }} |
     {{title}}
@@ -15,11 +17,11 @@
         <div class="float-left">
             <h5 class="card-title">{{title}}</h5>
         </div>
-        <div class="float-right top-nav-search">
-            <form method="GET" action="{% url 'lead_management:event_list' %}">
-                    <input type="text" class="form-control" placeholder="Search by anything" name="query">
-                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+        <div class="float-right top-nav-search ">
+           <form method="GET" action="{% url 'lead_management:user_event_list' %}">
+                <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+            </form>
 
         </div>
     </div>
@@ -29,7 +31,7 @@
             <table class="table table-nowrap mb-0 task-table">
                 <thead>
                     <tr>
-                        
+
                         <th>Event Name</th>
                         <th>Event Description</th>
                         <th>Event Date</th>
@@ -40,10 +42,10 @@
                 <tbody>
                     {% for event in event_list %}
                         <tr>
-                            <td>{{event.event.name}}</td>
-                            <td>{{event.event.description}}</td>
+                            <td>{{event.name}}</td>
+                            <td>{{event.description}}</td>
                             <td>
-                                {{event.event.event_date}}
+                                {{event.event_date}}
                             </td>
 
                             <td>
@@ -55,8 +57,7 @@
                             </td>
 
                             <td>
-                                <a href="{% url 'lead_management:lead_list' event.id %}" class="btn btn-primary btn-sm">View Leads</a>
-                                <a href="{% url 'lead_management:lead_management' event.id  'unassigned' %}" class="btn btn-primary btn-sm">Assign Task</a>
+                                <a href="{% url 'lead_management:user_lead_list' event.id %}" class="btn btn-primary btn-sm">View Leads</a>
                             </td>
                         </tr>
                     {% empty %}

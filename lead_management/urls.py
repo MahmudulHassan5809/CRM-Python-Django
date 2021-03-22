@@ -18,6 +18,15 @@ urlpatterns = [
 	path('management/<int:event_id>/<str:type>', views.LeadManagementView.as_view(),name='lead_management'),
 
 
-	path('user/event/', views.UserEventListView.as_view(),name='user_event_list'),
+	path('lead-details/<int:pk>/',views.LeadDetailsView.as_view(),name="lead_details"),
+    path('lead-status/<int:lead_id>/',views.GetListStatusView.as_view(),name="get_lead_status"),
+    path('update-lead-status/<int:lead_id>/',views.LeadStatusUpdateView.as_view(),name="update_lead_status"),
+
+
+    path('user/event/', views.UserEventListView.as_view(),name='user_event_list'),
+    path('user/lead/<int:event_id>/', views.UserLeadListView.as_view(),name='user_lead_list'),
+
+
+
 
 ]

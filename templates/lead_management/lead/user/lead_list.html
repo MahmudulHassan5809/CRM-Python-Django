@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+                <div class="float-left">
+                    <h5 class="card-title">{{title}}</h5>
+                </div>
+                <div class="float-right top-nav-search d-flex justify-content-between">
+
+                    <form method="GET" action="{% url 'lead_management:user_lead_list' event_id %}" class="mr-2">
+                        {{form.status|as_crispy_field}}
+                        <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+
+                    <form method="GET" action="{% url 'lead_management:user_lead_list' event_id %}">
+                        <input type="text" class="form-control" placeholder="Search by anything" name="query">
+                        <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+
+
+
+
+                </div>
+            </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Status</th>
+                        <th>Action</th>
+
+                </thead>
+                <tbody>
+                    {% for lead in lead_list %}
+                        <tr>
+                            <td>{{forloop.counter0|add:page_obj.start_index}}</td>
+                            <td>{{lead.name}}</td>
+                            <td>{{lead.email}}</td>
+                            <td>
+                                {{lead.phone_number}}
+                            </td>
+                            <td>
+                                {% if lead.assigned %}
+                                    <span class="badge badge-primary">Assigned</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Not Assigned</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'lead_management:lead_details' lead.id %}" class="btn btn-info btn-sm rounded-0">Details</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <section class="comp-section mt-3">
+                {% include 'partials/_pagination.html' %}
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock content %}
