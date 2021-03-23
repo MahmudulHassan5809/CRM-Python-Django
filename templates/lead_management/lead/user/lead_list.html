@@ -19,7 +19,8 @@
                 <div class="float-right top-nav-search d-flex justify-content-between">
 
                     <form method="GET" action="{% url 'lead_management:user_lead_list' event_id %}" class="mr-2">
-                        {{form.status|as_crispy_field}}
+
+                        {{form|crispy}}
                         <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                     </form>
 
@@ -27,10 +28,6 @@
                         <input type="text" class="form-control" placeholder="Search by anything" name="query">
                         <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                     </form>
-
-
-
-
                 </div>
             </div>
     <div class="card-body">

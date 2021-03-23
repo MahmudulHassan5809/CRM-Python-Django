@@ -133,8 +133,6 @@ class CreateBulkLeadView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.Form
 
 		data = json.loads(data)
 
-		print(data)
-
 		for row in data:
 			created_at = row['timestamp']
 			name = row['name']
@@ -146,18 +144,20 @@ class CreateBulkLeadView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.Form
 			ielts_score = row['ielts_score']
 			remarks = row['remarks']
 
-			Lead.objects.create(
-				created_by=self.request.user,
+			Lead.objects.get_or_create(
 				event = event,
-				name= name,
 				email = email_address,
 				phone_number = phone_number,
-				present_address = present_address,
-				country_of_interest = country_of_interest,
-				last_completed_education = last_completed_education,
-				ielts = ielts_score,
-				remarks = remarks,
-				created_at = created_at,
+				defaults={
+					'created_by' : self.request.user,
+					'name' : name,
+					'present_address' : present_address,
+					'country_of_interest' : country_of_interest,
+					'last_completed_education' : last_completed_education,
+					'ielts' : ielts_score,
+					'remarks' : remarks,
+					'created_at' : created_at
+				}
 			)
 
 		return redirect('lead_management:lead_list',event.id)
@@ -285,10 +285,13 @@ class UserEventListView(LoginRequiredMixin,View):
 		query = self.request.GET.get('query',None)
 		if query:
 			event_list = event_list.filter_by_query(query)
+
 		status = self.request.GET.get('status',None)
+
 		context = {
 			'title' : 'User Event List',
 			'event_list' : event_list,
+			'form' : LeadFilterByStatusForm()
 		}
 		return render(request,'lead_management/event/user/event_list.html',context)
 
@@ -361,33 +364,33 @@ class LeadDetailsView(LoginRequiredMixin,FormMixin,generic.DetailView):
 
 
 
-class GetListStatusView(LoginRequiredMixin,View):
-	def get(self,request,*args,**kwargs):
-		lead_id = self.kwargs.get('lead_id')
-		lead_obj = get_object_or_404(Lead,id=lead_id)
-		data = {
-			'note' : lead_obj.note,
-			'status' : lead_obj.status
-		}
+# class GetListStatusView(LoginRequiredMixin,View):
+# 	def get(self,request,*args,**kwargs):
+# 		lead_id = self.kwargs.get('lead_id')
+# 		lead_obj = get_object_or_404(Lead,id=lead_id)
+# 		data = {
+# 			'note' : lead_obj.note,
+# 			'status' : lead_obj.status
+# 		}
 
-		return HttpResponse(json.dumps(data),content_type="application/json", status=200)
-
-
+# 		return HttpResponse(json.dumps(data),content_type="application/json", status=200)
 
 
-class LeadStatusUpdateView(LoginRequiredMixin,View):
-	def post(self,request,*args,**kwargs):
-		lead_id = self.kwargs.get('lead_id')
-		form = ChangeLeadStatusForm(request.POST)
 
-		if form.is_valid():
-			note = form.cleaned_data.get('note')
-			status = form.cleaned_data.get('status')
 
-			lead_obj = get_object_or_404(Lead,id=lead_id)
-			lead_obj.status = status
-			lead_obj.note = note
-			lead_obj.save()
-			return HttpResponse(json.dumps(f"Lead Status Updated"),content_type="application/json", status=200)
-		else:
-			return HttpResponse(form.errors.as_json(), status=400)
+# class LeadStatusUpdateView(LoginRequiredMixin,View):
+# 	def post(self,request,*args,**kwargs):
+# 		lead_id = self.kwargs.get('lead_id')
+# 		form = ChangeLeadStatusForm(request.POST)
+
+# 		if form.is_valid():
+# 			note = form.cleaned_data.get('note')
+# 			status = form.cleaned_data.get('status')
+
+# 			lead_obj = get_object_or_404(Lead,id=lead_id)
+# 			lead_obj.status = status
+# 			lead_obj.note = note
+# 			lead_obj.save()
+# 			return HttpResponse(json.dumps(f"Lead Status Updated"),content_type="application/json", status=200)
+# 		else:
+# 			return HttpResponse(form.errors.as_json(), status=400)

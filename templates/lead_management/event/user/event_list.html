@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 
-
+{% load crispy_forms_tags %}
 
 {% block title %}
     {{ block.super }} |
@@ -16,7 +16,10 @@
     <div class="card-header">
         <div class="float-left">
             <h5 class="card-title">{{title}}</h5>
+
         </div>
+
+
         <div class="float-right top-nav-search ">
            <form method="GET" action="{% url 'lead_management:user_event_list' %}">
                 <input type="text" class="form-control" placeholder="Search by anything" name="query">
