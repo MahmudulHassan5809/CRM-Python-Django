@@ -12,8 +12,8 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-xl-3 col-md-4">
-            <!-- Settings Menu -->
+        <!--<div class="col-xl-3 col-md-4">
+
             <div class="widget settings-menu">
                 <ul>
                     <li class="nav-item">
@@ -28,8 +28,8 @@
                     </li>
                 </ul>
             </div>
-            <!-- /Settings Menu -->
-        </div>
+
+        </div> -->
 
         <div class="col-xl-9 col-md-8">
 
@@ -92,6 +92,18 @@
                                 <th>Created AT</th>
                                 <td>{{lead_obj.created_at}}</td>
                             </tr>
+
+                            <tr>
+                                <td>
+                                    {{form.errors}}
+                                    <form method="POST" action="{% url 'lead_management:lead_details' lead_obj.id %}" novalidate>
+                                        {% csrf_token %}
+                                        {{form|crispy}}
+
+                                        <button type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -138,62 +150,62 @@
 
 {% block script %}
     <script>
-        var lead_id = "{{lead_id|safe}}"
+        // var lead_id = "{{lead_id|safe}}"
 
 
-        $(".change_status").on("click",function() {
-            $.ajax({
-                url: '{% url "lead_management:get_lead_status" lead_id %}',
-                type: 'GET',
-            })
-            .done(function(data) {
-                $(".modal").modal('show');
-                $("#id_note").val(data.note)
-                $(`#id_status option[value=${data.status}]`).attr('selected','selected');
-            })
-            .fail(function(err) {
-                $(".modal-title").text("Something went wrong!")
-                $(".modal-body-check").addClass("d-none")
-                $(".modal-body-cross").removeClass("d-none")
-                $(".msg").text(xhr.responseText)
-            })
-        })
+        // $(".change_status").on("click",function() {
+        //     $.ajax({
+        //         url: '{% url "lead_management:get_lead_status" lead_id %}',
+        //         type: 'GET',
+        //     })
+        //     .done(function(data) {
+        //         $(".modal").modal('show');
+        //         $("#id_note").val(data.note)
+        //         $(`#id_status option[value=${data.status}]`).attr('selected','selected');
+        //     })
+        //     .fail(function(err) {
+        //         $(".modal-title").text("Something went wrong!")
+        //         $(".modal-body-check").addClass("d-none")
+        //         $(".modal-body-cross").removeClass("d-none")
+        //         $(".msg").text(xhr.responseText)
+        //     })
+        // })
 
-        $(".close").on("click",function(e) {
-            window.location.reload();
-        })
-
-
+        // $(".close").on("click",function(e) {
+        //     window.location.reload();
+        // })
 
 
 
-        $('.status-change-button').on('click', function(event){
-            event.preventDefault();
-            var form_data = $("#status-change-form").serialize();
 
 
-            $(".modal-body-form").hide()
-            $.ajax({
-                type:'POST',
-                url:'{% url "lead_management:update_lead_status" lead_id %}',
-                data:form_data,
-                success:function(data){
-                    console.log(data)
-                    $(".modal-body-cross").addClass("d-none")
-                    $(".modal-body-check").removeClass("d-none")
+        // $('.status-change-button').on('click', function(event){
+        //     event.preventDefault();
+        //     var form_data = $("#status-change-form").serialize();
 
-                    $(".modal-title").text("Successful!")
-                    $(".msg").text(data)
-                },
-                error : function(xhr,errmsg,err) {
-                    console.log(xhr.status + ": " + xhr.responseText);
-                    $(".modal-title").text("Something went wrong!")
-                    $(".modal-body-check").addClass("d-none")
-                    $(".modal-body-cross").removeClass("d-none")
-                    $(".msg").text(xhr.responseText)
-                }
-            });
 
-        });
+        //     $(".modal-body-form").hide()
+        //     $.ajax({
+        //         type:'POST',
+        //         url:'{% url "lead_management:update_lead_status" lead_id %}',
+        //         data:form_data,
+        //         success:function(data){
+        //             console.log(data)
+        //             $(".modal-body-cross").addClass("d-none")
+        //             $(".modal-body-check").removeClass("d-none")
+
+        //             $(".modal-title").text("Successful!")
+        //             $(".msg").text(data)
+        //         },
+        //         error : function(xhr,errmsg,err) {
+        //             console.log(xhr.status + ": " + xhr.responseText);
+        //             $(".modal-title").text("Something went wrong!")
+        //             $(".modal-body-check").addClass("d-none")
+        //             $(".modal-body-cross").removeClass("d-none")
+        //             $(".msg").text(xhr.responseText)
+        //         }
+        //     });
+
+        // });
     </script>
 {% endblock script %}

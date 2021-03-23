@@ -19,6 +19,8 @@ urlpatterns = [
 
 
 	path('lead-details/<int:pk>/',views.LeadDetailsView.as_view(),name="lead_details"),
+
+
     path('lead-status/<int:lead_id>/',views.GetListStatusView.as_view(),name="get_lead_status"),
     path('update-lead-status/<int:lead_id>/',views.LeadStatusUpdateView.as_view(),name="update_lead_status"),
 

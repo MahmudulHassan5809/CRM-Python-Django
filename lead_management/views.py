@@ -23,6 +23,7 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from .models import Lead,Event,TaskAssign
+from django.views.generic.edit import FormMixin
 from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm,ChangeLeadStatusForm,LeadFilterByStatusForm
 from .tables import TaskAssignTable
 
@@ -329,18 +330,35 @@ class UserLeadListView(LoginRequiredMixin,generic.ListView):
 
 
 
-class LeadDetailsView(LoginRequiredMixin,generic.DetailView):
+class LeadDetailsView(LoginRequiredMixin,FormMixin,generic.DetailView):
 	model = Lead
+	form_class = ChangeLeadStatusForm
 	context_object_name = 'lead_obj'
 	template_name = 'lead_management/lead/user/lead_details.html'
-
 
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Lead Details"
 	    context['lead_id'] = self.kwargs.get("pk")
-	    context['form'] = ChangeLeadStatusForm()
+	    context['form'] = ChangeLeadStatusForm(initial={'note': self.object.note,'status':self.object.status})
 	    return context
+
+	def post(self, request, *args, **kwargs):
+		self.object = self.get_object()
+		form = ChangeLeadStatusForm(request.POST)
+		if form.is_valid():
+			note = request.POST.get('note')
+			status = request.POST.get('status')
+			self.object.status = status
+			self.object.note = note
+			self.object.save()
+			return redirect('lead_management:lead_details', self.object.id)
+		else:
+			print(form.errors)
+			return self.form_invalid(form)
+
+
+
 
 
 class GetListStatusView(LoginRequiredMixin,View):
