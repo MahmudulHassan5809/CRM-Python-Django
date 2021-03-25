@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from smart_selects.db_fields import ChainedForeignKey
-
+from ckeditor.fields import RichTextField
 
 
 User = get_user_model()
@@ -78,7 +78,7 @@ class Lead(models.Model):
     created_at = models.DateField(auto_now_add=True)
     assigned = models.BooleanField(default=False)
     status = models.CharField(max_length=20,choices=LEAD_STATUS_CHOICE,default='NEW')
-    note =  models.TextField(null=True,blank=True)
+    note =  RichTextField(null=True,blank=True)
 
     objects = LeadQuerySet.as_manager()
 
@@ -86,7 +86,8 @@ class Lead(models.Model):
     	return self.name
 
     class Meta:
-    	verbose_name_plural = '1. Leads'
+        verbose_name_plural = '1. Leads'
+        ordering = ['id']
 
 
 

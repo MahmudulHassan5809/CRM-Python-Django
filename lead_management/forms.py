@@ -66,11 +66,12 @@ class TaskAssignForm(ModelForm):
 
 
 
-class ChangeLeadStatusForm(forms.ModelForm):
-	note = forms.CharField(required=True,widget=forms.Textarea())
+class UpdateLeadForm(forms.ModelForm):
+	note = forms.CharField(required=True,widget=forms.Textarea(attrs={'rows': 1, 'cols': 40}))
+	country_of_interest = forms.CharField(required=True,widget=forms.Textarea(attrs={'rows': 1, 'cols': 40}))
 	class Meta:
 		model = Lead
-		fields = ['note','status']
+		exclude = ["event","created_by","created_at",'assigned']
 
 
 class LeadFilterByStatusForm(forms.Form):

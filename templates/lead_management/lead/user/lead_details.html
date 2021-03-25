@@ -31,81 +31,74 @@
 
         </div> -->
 
-        <div class="col-xl-9 col-md-8">
+        <div class="col-xl-12 col-md-12">
 
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Basic information</h5>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-nowrap mb-0 task-table">
-                            <tr>
-                                <th>Event Name</th>
-                                <td>{{lead_obj.event.name}}</td>
-                            </tr>
+                            <form method="POST" action="{% url 'lead_management:lead_details' lead_obj.id %}" novalidate>
+                                {% csrf_token %}
+                                {{ form.media }}
+                                <div class="form-row">
+                                    <div class="col">
+                                      {{form.name|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.email|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.phone_number|as_crispy_field}}
+                                    </div>
+                                </div>
 
-                            <tr>
-                                <th>Name</th>
-                                <td>{{lead_obj.name}}</td>
-                            </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td>{{lead_obj.email}}</td>
-                            </tr>
-                            <tr>
-                                <th>Phone Number</th>
-                                <td>{{lead_obj.phone_number}}</td>
-                            </tr>
+                                <div class="form-row">
+                                    <div class="col">
+                                      {{form.present_address|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.country_of_interest|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.last_completed_education|as_crispy_field}}
+                                    </div>
+                                </div>
 
-                            <tr>
-                                <th>Present Address</th>
-                                <td>{{lead_obj.present_address}}</td>
-                            </tr>
+                                <div class="form-row">
+                                    <div class="col">
+                                      {{form.ielts|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.remarks|as_crispy_field}}
+                                    </div>
+                                </div>
 
-                            <tr>
-                                <th>Country Of Interest</th>
-                                <td>{{lead_obj.country_of_interest}}</td>
-                            </tr>
+                                <div class="form-row">
+                                    <div class="col">
+                                      {{form.status|as_crispy_field}}
+                                    </div>
+                                    <div class="col">
+                                      {{form.note|as_crispy_field}}
+                                    </div>
+                                   
+                                </div>
 
-                            <tr>
-                                <th>Last Completed Education</th>
-                                <td>{{lead_obj.last_completed_education}}</td>
-                            </tr>
+                                <div class="form-row mb-3">
+                                    <div class="col">
+                                        <strong>Lead Creation Date: </strong> {{lead_obj.created_at}}
+                                    </div>
+                                </div>
 
-                            <tr>
-                                <th>Ielts</th>
-                                <td>{{lead_obj.ielts}}</td>
-                            </tr>
 
-                            <tr>
-                                <th>Remarks</th>
-                                <td>{{lead_obj.note}}</td>
-                            </tr>
+                                <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button" name="save" value="Save" />
+                                
+                                <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button {% if not check_next_lead %}
+                                    disabled
+                                {% endif %}" name="save_continue" value="Save and Continue" />
+                            </form>
 
-                            <tr>
-                                <th>Status</th>
-                                <td>{{lead_obj.get_status_display}}</td>
-                            </tr>
-
-                            <tr>
-                                <th>Created AT</th>
-                                <td>{{lead_obj.created_at}}</td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    {{form.errors}}
-                                    <form method="POST" action="{% url 'lead_management:lead_details' lead_obj.id %}" novalidate>
-                                        {% csrf_token %}
-                                        {{form|crispy}}
-
-                                        <button type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button">Save</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                        
                 </div>
             </div>
         </div>

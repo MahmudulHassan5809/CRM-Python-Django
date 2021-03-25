@@ -49,3 +49,14 @@ Stage 4: Visa Status
     ⁃   Application Done
     ⁃   Visa Received
 Stage 5: Finalisation
+
+
+-------------------
+
+New
+Not Available > Phone Off, No Answer, Call Forwarded, Incorrect Number, Other
+Positive Response > Event Confirmed, Future Interest, Decision Pending, Other
+Negative Response > Not Interested, Uninformed, Not Qualified, Self-Applied, Other
+File Opened (Then assign this Lead into Students list)
+
+Add Previous and Next Buttons in the Task Management (Indiviudal Lists)

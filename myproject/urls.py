@@ -19,6 +19,7 @@ urlpatterns = [
 
 
     path('jsi18n', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    # path('ckeditor/', include('ckeditor_uploader.urls')),
     path('chaining/', include('smart_selects.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
 ]

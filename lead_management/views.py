@@ -24,7 +24,7 @@ from accounts.mixins import SuperAdminRequiredMixin
 from branch.models import Branch
 from .models import Lead,Event,TaskAssign
 from django.views.generic.edit import FormMixin
-from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm,ChangeLeadStatusForm,LeadFilterByStatusForm
+from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm,UpdateLeadForm,LeadFilterByStatusForm
 from .tables import TaskAssignTable
 
 # Create your views here.
@@ -188,6 +188,10 @@ class LeadListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
 		if query:
 			qs = qs.filter_query(query)
 
+		status = self.request.GET.get('status',None)
+		if status:
+			qs = qs.filter_by_status(status)
+
 		return qs
 
 
@@ -195,6 +199,7 @@ class LeadListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Lead List"
 	    context["event_id"] = self.kwargs.get('event_id',None)
+	    context["form"] = LeadFilterByStatusForm()
 	    return context
 
 
@@ -333,32 +338,58 @@ class UserLeadListView(LoginRequiredMixin,generic.ListView):
 
 
 
-class LeadDetailsView(LoginRequiredMixin,FormMixin,generic.DetailView):
+class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView):
 	model = Lead
-	form_class = ChangeLeadStatusForm
+	form_class = UpdateLeadForm
 	context_object_name = 'lead_obj'
+	success_message = "Information updated successfully..."
 	template_name = 'lead_management/lead/user/lead_details.html'
+
+	def get_success_url(self,**kwargs):
+		if self.request.POST.get('save_continue',None):
+			check_next_lead = TaskAssign.objects.filter(lead__id__gt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
+			
+			if check_next_lead:
+				return reverse('lead_management:lead_details', args=(check_next_lead.lead.id,))
+			else:
+				return reverse('lead_management:lead_details', args=(self.object.id,))
+		else:
+			return reverse('lead_management:lead_details', args=(self.object.id,))
 
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Lead Details"
 	    context['lead_id'] = self.kwargs.get("pk")
-	    context['form'] = ChangeLeadStatusForm(initial={'note': self.object.note,'status':self.object.status})
+	    context['check_next_lead'] = TaskAssign.objects.filter(lead__id__gt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
+	    # context['form'] = UpdateLeadForm(
+	    # 	initial={
+		   #  	'name' : self.object.name,
+		   #  	'email' : self.object.email,
+		   #  	'phone_number' : self.object.phone_number,
+		   #  	'present_address' : self.object.present_address,
+		   #  	'country_of_interest' : self.object.country_of_interest,
+		   #  	'last_completed_education' : self.object.last_completed_education,
+		   #  	'ielts' : self.object.ielts,
+		   #  	'remarks' : self.object.remarks,
+		   #  	'status' : self.object.status,
+		   #  	'note' : self.object.note,
+	    # 	}
+	    # )
 	    return context
 
-	def post(self, request, *args, **kwargs):
-		self.object = self.get_object()
-		form = ChangeLeadStatusForm(request.POST)
-		if form.is_valid():
-			note = request.POST.get('note')
-			status = request.POST.get('status')
-			self.object.status = status
-			self.object.note = note
-			self.object.save()
-			return redirect('lead_management:lead_details', self.object.id)
-		else:
-			print(form.errors)
-			return self.form_invalid(form)
+	# def post(self, request, *args, **kwargs):
+	# 	self.object = self.get_object()
+	# 	form = UpdateLeadForm(request.POST)
+	# 	if form.is_valid():
+	# 		note = request.POST.get('note')
+	# 		status = request.POST.get('status')
+	# 		self.object.status = status
+	# 		self.object.note = note
+	# 		self.object.save()
+	# 		return redirect('lead_management:lead_details', self.object.id)
+	# 	else:
+	# 		print(form.errors)
+	# 		return self.form_invalid(form)
 
 
 
@@ -381,7 +412,7 @@ class LeadDetailsView(LoginRequiredMixin,FormMixin,generic.DetailView):
 # class LeadStatusUpdateView(LoginRequiredMixin,View):
 # 	def post(self,request,*args,**kwargs):
 # 		lead_id = self.kwargs.get('lead_id')
-# 		form = ChangeLeadStatusForm(request.POST)
+# 		form = UpdateLeadForm(request.POST)
 
 # 		if form.is_valid():
 # 			note = form.cleaned_data.get('note')

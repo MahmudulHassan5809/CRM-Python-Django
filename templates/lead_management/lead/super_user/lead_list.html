@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 
+{% load crispy_forms_tags %}
+
 {% block title %}
     {{ block.super }} |
     {{title}}
@@ -14,13 +16,26 @@
                 <div class="float-left">
                     <h5 class="card-title">{{title}}</h5>
                 </div>
-                <div class="float-right top-nav-search">
+                <div class="float-right top-nav-search d-flex justify-content-between">
                     {% if event_id %}
+                        <form method="GET" action="{% url 'lead_management:lead_list' event_id %}" class="mr-2">
+
+                            {{form|crispy}}
+                        
+                        </form>
+
                         <form method="GET" action="{% url 'lead_management:lead_list' event_id %}">
                             <input type="text" class="form-control" placeholder="Search by anything" name="query">
                             <button class="btn" type="submit"><i class="fas fa-search"></i></button>
                         </form>
+
                     {% else %}
+                        <form method="GET" action="{% url 'lead_management:lead_list' %}" class="mr-2">
+
+                            {{form|crispy}}
+                        
+                        </form>
+
                         <form method="GET" action="{% url 'lead_management:lead_list' %}">
                             <input type="text" class="form-control" placeholder="Search by anything" name="query">
                             <button class="btn" type="submit"><i class="fas fa-search"></i></button>
@@ -72,3 +87,12 @@
     </div>
 </div>
 {% endblock content %}
+
+
+{% block script %}
+    <script type="text/javascript">
+        $('#id_status').on('change', function(){
+            $(this).closest('form').submit();
+        });
+    </script>
+{% endblock script %}
