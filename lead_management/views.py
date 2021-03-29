@@ -348,7 +348,7 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 	def get_success_url(self,**kwargs):
 		if self.request.POST.get('save_continue',None):
 			check_next_lead = TaskAssign.objects.filter(lead__id__gt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
-			
+
 			if check_next_lead:
 				return reverse('lead_management:lead_details', args=(check_next_lead.lead.id,))
 			else:
@@ -361,35 +361,10 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 	    context['title'] = "Lead Details"
 	    context['lead_id'] = self.kwargs.get("pk")
 	    context['check_next_lead'] = TaskAssign.objects.filter(lead__id__gt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
-	    # context['form'] = UpdateLeadForm(
-	    # 	initial={
-		   #  	'name' : self.object.name,
-		   #  	'email' : self.object.email,
-		   #  	'phone_number' : self.object.phone_number,
-		   #  	'present_address' : self.object.present_address,
-		   #  	'country_of_interest' : self.object.country_of_interest,
-		   #  	'last_completed_education' : self.object.last_completed_education,
-		   #  	'ielts' : self.object.ielts,
-		   #  	'remarks' : self.object.remarks,
-		   #  	'status' : self.object.status,
-		   #  	'note' : self.object.note,
-	    # 	}
-	    # )
+	    context['check_prev_lead'] = TaskAssign.objects.filter(lead__id__lt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
 	    return context
 
-	# def post(self, request, *args, **kwargs):
-	# 	self.object = self.get_object()
-	# 	form = UpdateLeadForm(request.POST)
-	# 	if form.is_valid():
-	# 		note = request.POST.get('note')
-	# 		status = request.POST.get('status')
-	# 		self.object.status = status
-	# 		self.object.note = note
-	# 		self.object.save()
-	# 		return redirect('lead_management:lead_details', self.object.id)
-	# 	else:
-	# 		print(form.errors)
-	# 		return self.form_invalid(form)
+
 
 
 

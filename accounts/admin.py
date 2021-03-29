@@ -15,14 +15,14 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username','user_type','password1', 'password2',)
+            'fields': ('email', 'username','user_type','branch','password1', 'password2',)
         }),
     )
     model = User
     list_display = ['email', 'username', 'first_name',
-                    'last_name', 'is_staff', 'user_type','active']
+                    'last_name', 'is_staff', 'branch','user_type','active']
     list_filter = ['is_staff', 'user_type']
-    list_editable = ['user_type','active']
+    list_editable = ['user_type','branch','active']
     list_perpage = 20
 
 

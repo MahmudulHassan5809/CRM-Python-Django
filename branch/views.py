@@ -7,8 +7,6 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View, generic
 
 from accounts.mixins import SuperAdminRequiredMixin
-
-
 from .models import Branch
 from .forms import BranchCreateForm
 
@@ -29,11 +27,20 @@ class CreateBranchView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequired
         return context
 
 
-class BranchListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
+class BranchListView(LoginRequiredMixin,generic.ListView):
     model = Branch
     context_object_name = 'branch_list'
     paginate_by = 10
     template_name = 'branch/super_user/branch_list.html'
+
+
+    def get_queryset(self,**kwargs):
+        qs = super().get_queryset(**kwargs)
+        if self.request.user.user_type != 'SUPER_ADMIN' and not self.request.user.is_superuser:
+            qs = qs.filter(id=self.request.user.branch.id)
+        return qs
+
+
 
 
     def get_context_data(self,**kwargs):
@@ -43,7 +50,7 @@ class BranchListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView
 
 
 
-class BranchUpdateView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.UpdateView):
+class BranchUpdateView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.UpdateView):
     model = Branch
     form_class  = BranchCreateForm
     context_object_name = 'branch_obj'
@@ -60,7 +67,7 @@ class BranchUpdateView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.Update
         return context
 
 
-class BranchDeleteView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.DeleteView):
+class BranchDeleteView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMixin,generic.DeleteView):
     model = Branch
     template_name = 'branch/super_user/branch_delete.html'
     success_message = 'Information deleted successfully!'
@@ -77,3 +84,7 @@ class BranchDeleteView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.Delete
         context = super().get_context_data(**kwargs)
         context['title'] = 'Delete Branch'
         return context
+
+
+
+

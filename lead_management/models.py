@@ -57,11 +57,22 @@ class Lead(models.Model):
             ('OTHER', 'Other'),
         )
         ),
-        ('Video', (
-                ('vhs', 'VHS Tape'),
-                ('dvd', 'DVD'),
+        ('Positive Response', (
+                ('EVENT_CONFIRMED', 'Event Confirmed'),
+                ('FUTURE_INTEREST', 'Future Interest'),
+                ('DECISION_PENDING', 'Decision Pending'),
+                ('OTHER', 'Other'),
             )
         ),
+        ('Negative Response', (
+                ('NOT_INTERESTED', 'Not Interested'),
+                ('UNINFORMED', 'Uninformed'),
+                ('NOT_QUALIFIED', 'Not Qualified'),
+                ('SELF_APPLIED', 'Self-Applied'),
+                ('OTHER', 'Other'),
+            )
+        ),
+        ('FILE_OPENED', 'File Opened'),
         ('NEW', 'New'),
     ]
 
@@ -114,3 +125,14 @@ class TaskAssign(models.Model):
         sort=True)
 
     objects = TaskAssignQuerySet.as_manager()
+
+    def __str__(self):
+        return self.lead.name
+
+    class Meta:
+        verbose_name_plural = '1. Task'
+
+
+
+class Student(models.Model):
+    pass

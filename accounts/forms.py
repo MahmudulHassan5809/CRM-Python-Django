@@ -14,7 +14,7 @@ from django.forms.widgets import PasswordInput, TextInput
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = get_user_model()
-        fields = ('email', 'username','user_type')
+        fields = ('email', 'username','user_type','branch')
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)

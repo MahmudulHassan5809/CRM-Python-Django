@@ -12,24 +12,7 @@
 
 {% block content %}
     <div class="row">
-        <!--<div class="col-xl-3 col-md-4">
 
-            <div class="widget settings-menu">
-                <ul>
-                    <li class="nav-item">
-                        <a href="#" data-toggle="modal" data-target="#change_status" class="nav-link change_status">
-                            <i class="fas fa-edit"></i> Change Status
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="preferences.html" class="nav-link">
-                            <i class="fas fa-cog"></i> <span>Preferences</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-        </div> -->
 
         <div class="col-xl-12 col-md-12">
 
@@ -38,67 +21,81 @@
                     <h5 class="card-title">Basic information</h5>
                 </div>
                 <div class="card-body">
-                            <form method="POST" action="{% url 'lead_management:lead_details' lead_obj.id %}" novalidate>
-                                {% csrf_token %}
-                                {{ form.media }}
-                                <div class="form-row">
-                                    <div class="col">
-                                      {{form.name|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.email|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.phone_number|as_crispy_field}}
-                                    </div>
-                                </div>
+                    <form method="POST" action="{% url 'lead_management:lead_details' lead_obj.id %}" novalidate>
+                        {% csrf_token %}
+                        {{ form.media }}
+                        <div class="form-row">
+                            <div class="col">
+                              {{form.name|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.email|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.phone_number|as_crispy_field}}
+                            </div>
+                        </div>
 
-                                <div class="form-row">
-                                    <div class="col">
-                                      {{form.present_address|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.country_of_interest|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.last_completed_education|as_crispy_field}}
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div class="col">
+                              {{form.present_address|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.country_of_interest|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.last_completed_education|as_crispy_field}}
+                            </div>
+                        </div>
 
-                                <div class="form-row">
-                                    <div class="col">
-                                      {{form.ielts|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.remarks|as_crispy_field}}
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div class="col">
+                              {{form.ielts|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.remarks|as_crispy_field}}
+                            </div>
+                        </div>
 
-                                <div class="form-row">
-                                    <div class="col">
-                                      {{form.status|as_crispy_field}}
-                                    </div>
-                                    <div class="col">
-                                      {{form.note|as_crispy_field}}
-                                    </div>
-                                   
-                                </div>
+                        <div class="form-row">
+                            <div class="col">
+                              {{form.status|as_crispy_field}}
+                            </div>
+                            <div class="col">
+                              {{form.note|as_crispy_field}}
+                            </div>
 
-                                <div class="form-row mb-3">
-                                    <div class="col">
-                                        <strong>Lead Creation Date: </strong> {{lead_obj.created_at}}
-                                    </div>
-                                </div>
+                        </div>
+
+                        <div class="form-row mb-3">
+                            <div class="col">
+                                <strong>Lead Creation Date: </strong> {{lead_obj.created_at}}
+                            </div>
+                        </div>
 
 
-                                <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button" name="save" value="Save" />
-                                
-                                <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button {% if not check_next_lead %}
-                                    disabled
-                                {% endif %}" name="save_continue" value="Save and Continue" />
-                            </form>
+                        <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button" name="save" value="Save" />
 
-                        
+                        <input type="submit" class="btn btn-primary  save-categorysubmit-btn status-change-button {% if not check_next_lead %}
+                            disabled
+                        {% endif %}" name="save_continue" value="Save and Continue" />
+                    </form>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        {% if check_prev_lead %}
+                            <a href="{% url 'lead_management:lead_details' check_prev_lead.lead.id %}" class="btn btn-info rounded-0 btn-sm">Prev</a>
+                        {% else %}
+                            <a href="javascript:void(0)" disabled class="btn btn-info rounded-0 btn-sm">Prev</a>
+                        {% endif %}
+
+                        {% if check_next_lead %}
+                             <a href="javascript:void(0)" disabled class="btn btn-info rounded-0 btn-sm">Next</a>
+                        {% endif %}
+
+
+
+                    </div>
+
                 </div>
             </div>
         </div>
