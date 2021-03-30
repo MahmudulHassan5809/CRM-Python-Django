@@ -23,6 +23,7 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from .models import Lead,Event,TaskAssign
+from students.models import Student
 from django.views.generic.edit import FormMixin
 from .forms import LeadCreateForm,EventCreateForm,BulkLeadCreateForm,TaskAssignForm,UpdateLeadForm,LeadFilterByStatusForm
 from .tables import TaskAssignTable
@@ -356,6 +357,14 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 		else:
 			return reverse('lead_management:lead_details', args=(self.object.id,))
 
+
+	def form_valid(self,form):
+		user = self.request.POST.get('user')
+		obj = form.save()
+		Student.objects.update_or_create(lead=obj,branch=obj.lead_task.branch,event=obj.event,defaults={'assignee_id': user})
+		return super(LeadDetailsView, self).form_valid(form)		
+
+
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Lead Details"
@@ -370,33 +379,4 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 
 
 
-# class GetListStatusView(LoginRequiredMixin,View):
-# 	def get(self,request,*args,**kwargs):
-# 		lead_id = self.kwargs.get('lead_id')
-# 		lead_obj = get_object_or_404(Lead,id=lead_id)
-# 		data = {
-# 			'note' : lead_obj.note,
-# 			'status' : lead_obj.status
-# 		}
 
-# 		return HttpResponse(json.dumps(data),content_type="application/json", status=200)
-
-
-
-
-# class LeadStatusUpdateView(LoginRequiredMixin,View):
-# 	def post(self,request,*args,**kwargs):
-# 		lead_id = self.kwargs.get('lead_id')
-# 		form = UpdateLeadForm(request.POST)
-
-# 		if form.is_valid():
-# 			note = form.cleaned_data.get('note')
-# 			status = form.cleaned_data.get('status')
-
-# 			lead_obj = get_object_or_404(Lead,id=lead_id)
-# 			lead_obj.status = status
-# 			lead_obj.note = note
-# 			lead_obj.save()
-# 			return HttpResponse(json.dumps(f"Lead Status Updated"),content_type="application/json", status=200)
-# 		else:
-# 			return HttpResponse(form.errors.as_json(), status=400)

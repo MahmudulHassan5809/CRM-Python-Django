@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ block.super }} |
+    {{title}}
+{% endblock title %}
+
+
+
+{% block content %}
+	<div class="row justify-content-lg-center">
+						<div class="col-md-12">
+						<div class="text-center">
+							<h2>{{student_obj.lead.name}} <i class="fas fa-certificate text-primary small" data-toggle="tooltip" data-placement="top" title="" data-original-title="Verified"></i></h2>
+							<ul class="list-inline">
+								<li class="list-inline-item">
+									<i class="far fa-email"></i> <span>{{student_obj.lead.email}}</span>
+								</li>
+								<li class="list-inline-item">
+									<i class="fas fa-map-marker-alt"></i> {{student_obj.lead.present_address}}
+								</li>
+								<li class="list-inline-item">
+									<i class="far fa-calendar-alt"></i> <span>Joined {{student_obj.lead.created_at}}</span>
+								</li>
+							</ul>
+
+							<ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+							  <li class="nav-item">
+							    <a class="nav-link active" id="information-tab" data-toggle="tab" href="#information" role="tab" aria-controls="information" aria-selected="true">Information Collection</a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="false">Documents Checklist</a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link" id="application-tab" data-toggle="tab" href="#application" role="tab" aria-controls="application" aria-selected="false">Application Status</a>
+							  </li>
+
+							  <li class="nav-item">
+							    <a class="nav-link" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="false">Visa Status</a>
+							  </li>
+							</ul>
+
+						</div>
+			
+							
+							<div class="tab-content" id="myTabContent">
+							
+								
+								<div class="tab-pane fade show active" id="information" role="tabpanel" aria-labelledby="information-tab">
+									<div class="card">
+										<div class="card-body">
+											<div class="table-responsive">
+													<table class="table table-nowrap mb-0">
+														<tbody>
+															<tr>
+																<th>Name</th>
+																<td>{{student_obj.lead.name}}</td>
+															</tr>
+
+															<tr>
+																<th>Email</th>
+																<td>{{student_obj.lead.email}}</td>
+															</tr>
+
+															<tr>
+																<th>Phone Number</th>
+																<td>{{student_obj.lead.phone_number}}</td>
+															</tr>
+
+															<tr>
+																<th>Present Address</th>
+																<td>{{student_obj.lead.present_address}}</td>
+															</tr>
+
+															<tr>
+																<th>Country Of Interest</th>
+																<td>{{student_obj.lead.country_of_interest}}</td>
+															</tr>
+
+															<tr>
+																<th>Last Completed Education</th>
+																<td>{{student_obj.lead.last_completed_education}}</td>
+															</tr>
+
+															<tr>
+																<th>IELTS</th>
+																<td>{{student_obj.lead.ielts}}</td>
+															</tr>
+
+															<tr>
+																<th>Remarks</th>
+																<td>{{student_obj.lead.remarks}}</td>
+															</tr>
+
+															<tr>
+																<th>Status</th>
+																<td>{{student_obj.lead.get_status_display}}</td>
+															</tr>
+
+															<tr>
+																<th>Note</th>
+																<td>{{student_obj.lead.note}}</td>
+															</tr>
+
+															<tr>
+																<th>Created On</th>
+																<td>{{student_obj.lead.created_at}}</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+										</div>
+									</div>
+
+								</div>
+
+								<div class="tab-pane fade show" id="document" role="tabpanel" aria-labelledby="document-tab">
+									<div class="card">
+										<div class="card-body">
+											<table class="document_table">
+	    
+	        {% for form in document_form_set.forms %}
+		        <thead>
+		            {% if forloop.first %}
+		                {% for field in form %}
+		                    <th>{{ field.label_tag }}</th>
+		                {% endfor %}
+		            {% endif %}
+		    </thead>
+	    <tbody id="test-body">
+
+	            		<tr>
+		                {% for field in form %}
+		                    
+			                  <td>{{ field }}</td>
+			                
+		                {% endfor %}
+		            </tr>
+	            
+	            
+	        
+	    </tbody>
+	    {% endfor %}
+
+	     <input id='add-row' class='btn btn-primary' type='button' value='Add' />
+	</table>
+										</div>
+									</div>
+								</div>
+
+								<div class="tab-pane fade show" id="application" role="tabpanel" aria-labelledby="application-tab">
+									<div class="card">
+										<div class="card-body">
+											Application Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+											tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+											quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+											consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+											cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+											proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+										</div>
+									</div>
+
+								</div>
+
+
+								<div class="tab-pane fade show" id="visa" role="tabpanel" aria-labelledby="visa-tab">
+									<div class="card">
+										<div class="card-body">
+											Visa Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+											tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+											quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+											consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+											cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+											proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+										</div>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+					</div>
+{% endblock content %}
+
+
+{% block script %}
+	<script>
+		
+	  	$(document).on("click", "#add-row", function () {
+		  	$('.document_table').append('<tr><td>df</td><td>$</td></tr>');
+		  	 
+ 			console.log($('.document_table tr').length)
+	  });
+	</script>
+{% endblock script %}

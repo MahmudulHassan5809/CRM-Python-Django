@@ -68,8 +68,19 @@
                         </div>
 
                         <div class="form-row mb-3">
-                            <div class="col">
+                            <div class="col user_select d-none">
+                                <p class="m-0">User: </p>
+                                
+                                <select id="id_user" name="user" class="form-control">
+
+                                </select>
+                            </div>
+
+                            <div class="col my-auto">
                                 <strong>Lead Creation Date: </strong> {{lead_obj.created_at}}
+                            </div>
+                            <div class="col my-auto">
+                                <strong>Currently Assigned To : </strong> {{lead_obj.student.assignee.username|title}}
                             </div>
                         </div>
 
@@ -89,7 +100,9 @@
                         {% endif %}
 
                         {% if check_next_lead %}
-                             <a href="javascript:void(0)" disabled class="btn btn-info rounded-0 btn-sm">Next</a>
+                             <a href="{% url 'lead_management:lead_details' check_next_lead.lead.id %}" disabled class="btn btn-info rounded-0 btn-sm">Next</a>
+                        {% else %}
+                            <a href="javascript:void(0)" disabled class="btn btn-info rounded-0 btn-sm">Next</a>
                         {% endif %}
 
 
@@ -102,100 +115,41 @@
     </div>
 
 
-    <div class="modal custom-modal fade" id="change_status">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Change Status</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="modal-body-form">
-                        <div class="submit-section">
-                            <form method="POST" id="status-change-form">
-                                {% csrf_token %}
-                                {{form|crispy}}
-
-                                <button type="button" class="btn btn-primary  save-categorysubmit-btn status-change-button">Save</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="modal-body-check d-none text-success text-center">
-                        <i class="fas fa-check fa-5x"></i>
-                    </div>
-
-                    <div class="modal-body-cross d-none text-danger text-center">
-                       <i class="fas fa-times fa-5x"></i>
-                    </div>
-
-
-                    <div class="msg font-weight-bold"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 {% endblock content %}
 
 
 {% block script %}
     <script>
-        // var lead_id = "{{lead_id|safe}}"
+        var url = "{% url 'accounts:load_all_user' %}"
+        var initial_status_value = $("#id_status").val();
 
 
-        // $(".change_status").on("click",function() {
-        //     $.ajax({
-        //         url: '',
-        //         type: 'GET',
-        //     })
-        //     .done(function(data) {
-        //         $(".modal").modal('show');
-        //         $("#id_note").val(data.note)
-        //         $(`#id_status option[value=${data.status}]`).attr('selected','selected');
-        //     })
-        //     .fail(function(err) {
-        //         $(".modal-title").text("Something went wrong!")
-        //         $(".modal-body-check").addClass("d-none")
-        //         $(".modal-body-cross").removeClass("d-none")
-        //         $(".msg").text(xhr.responseText)
-        //     })
-        // })
+        if(initial_status_value === 'FILE_OPENED'){
+            get_user();
+        }else{
+            $(".user_select").addClass('d-none')
+        }
 
-        // $(".close").on("click",function(e) {
-        //     window.location.reload();
-        // })
+        $("#id_status").change(function(e) {
+            var status_value = $(this).val();
+            
+            if(status_value === 'FILE_OPENED'){
+                get_user()
+            }else{
+                $(".user_select").addClass('d-none')
+            }
+        })
 
+        function get_user(){
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+                        $(".user_select").removeClass('d-none')
+                        $("#id_user").html(data);
+                    }
 
-
-
-
-        // $('.status-change-button').on('click', function(event){
-        //     event.preventDefault();
-        //     var form_data = $("#status-change-form").serialize();
-
-
-        //     $(".modal-body-form").hide()
-        //     $.ajax({
-        //         type:'POST',
-        //         url:'',
-        //         data:form_data,
-        //         success:function(data){
-        //             console.log(data)
-        //             $(".modal-body-cross").addClass("d-none")
-        //             $(".modal-body-check").removeClass("d-none")
-
-        //             $(".modal-title").text("Successful!")
-        //             $(".msg").text(data)
-        //         },
-        //         error : function(xhr,errmsg,err) {
-        //             console.log(xhr.status + ": " + xhr.responseText);
-        //             $(".modal-title").text("Something went wrong!")
-        //             $(".modal-body-check").addClass("d-none")
-        //             $(".modal-body-cross").removeClass("d-none")
-        //             $(".msg").text(xhr.responseText)
-        //         }
-        //     });
-
-        // });
+                });
+            }
     </script>
 {% endblock script %}

@@ -15,6 +15,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls',namespace='accounts')),
     path('branch/', include('branch.urls',namespace='branch')),
     path('lead/', include('lead_management.urls',namespace='lead_management')),
+    path('students/', include('students.urls',namespace='students')),
 
 
 

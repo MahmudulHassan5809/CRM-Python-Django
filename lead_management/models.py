@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.contrib.auth import get_user_model
 from smart_selects.db_fields import ChainedForeignKey
 from ckeditor.fields import RichTextField
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 User = get_user_model()
@@ -49,6 +51,7 @@ class LeadQuerySet(models.QuerySet):
 
 class Lead(models.Model):
     LEAD_STATUS_CHOICE = [
+        ('NEW', 'New'),
         ('Not Available', (
             ('PHONE_OFF', 'Phone Off'),
             ('NO ANSWER', 'No Answer'),
@@ -73,7 +76,7 @@ class Lead(models.Model):
             )
         ),
         ('FILE_OPENED', 'File Opened'),
-        ('NEW', 'New'),
+        
     ]
 
     created_by = models.ForeignKey(User,on_delete=models.CASCADE,related_name="leads")
@@ -119,7 +122,7 @@ class TaskAssign(models.Model):
         on_delete=models.CASCADE,
         related_name='user_tasks',
         chained_field="branch",
-        chained_model_field="branch_users",
+        chained_model_field="branch",
         show_all=False,
         auto_choose=True,
         sort=True)
@@ -134,5 +137,12 @@ class TaskAssign(models.Model):
 
 
 
-class Student(models.Model):
-    pass
+
+
+
+
+# @receiver(post_save, sender=Lead)
+# def create_student(sender, instance, created, **kwargs):
+#     if not created and instance.status == 'FILE_OPENED':
+#         Student.objects.get_or_create(lead=instance,branch=instance.lead_task.branch,event=instance.event)
+    

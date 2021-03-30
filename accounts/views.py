@@ -21,7 +21,22 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+
+
+
 # Create your views here.
+
+
+def load_all_user(request):
+    all_user = User.objects.filter(active=True)
+    
+    return render(request, 'accounts/user_dropdown_list_options.html', {'all_user': all_user})
+
+
+
+
+
 class LoginView(SuccessMessageMixin, LoginView):
     template_name = 'accounts/login.html'
     success_message = 'You Have Successfully LoggedIn.'
@@ -137,3 +152,4 @@ class UserDeleteView(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequiredMi
         context = super().get_context_data(**kwargs)
         context['title'] = 'Delete User'
         return context
+

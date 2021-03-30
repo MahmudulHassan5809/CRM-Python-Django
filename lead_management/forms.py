@@ -84,11 +84,22 @@ class LeadFilterByStatusForm(forms.Form):
             ('OTHER', 'Other'),
         )
         ),
-        ('Video', (
-                ('vhs', 'VHS Tape'),
-                ('dvd', 'DVD'),
+        ('Positive Response', (
+                ('EVENT_CONFIRMED', 'Event Confirmed'),
+                ('FUTURE_INTEREST', 'Future Interest'),
+                ('DECISION_PENDING', 'Decision Pending'),
+                ('OTHER', 'Other'),
             )
         ),
+        ('Negative Response', (
+                ('NOT_INTERESTED', 'Not Interested'),
+                ('UNINFORMED', 'Uninformed'),
+                ('NOT_QUALIFIED', 'Not Qualified'),
+                ('SELF_APPLIED', 'Self-Applied'),
+                ('OTHER', 'Other'),
+            )
+        ),
+        ('FILE_OPENED', 'File Opened'),
         ('NEW', 'New'),
     ]
 	status = forms.ChoiceField(choices=LEAD_STATUS_CHOICE,required=True,label=False)

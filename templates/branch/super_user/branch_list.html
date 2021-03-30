@@ -26,11 +26,12 @@
                 </thead>
                 <tbody>
                     {% for branch in branch_list %}
+                    
                         <tr>
                             <td>{{forloop.counter0|add:page_obj.start_index}}</td>
                             <td>{{branch.branch_name}}</td>
                             <td>
-                                {{branch.branch_memebers.all|join:", "}}
+                                {{branch.branch_members.all|join:", "}}
                             </td>
 
                             <td>

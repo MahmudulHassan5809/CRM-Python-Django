@@ -24,6 +24,10 @@ urlpatterns = [
     path('user/delete/<int:pk>/',views.UserDeleteView.as_view(),name="user_delete"),
 
 
+
+    path('load/all-user/',views.load_all_user,name="load_all_user"),
+
+
     # path('/', views.SuperUserDashboardView.as_view(),name='superuser_dashboard'),
 
 

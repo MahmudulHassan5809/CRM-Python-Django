@@ -62,11 +62,27 @@
                                     </ul>
                                 </li>
 
+
+                            <li class="submenu">
+                                    <a href="#"><i data-feather="briefcase"></i> <span> Student Management</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a href="{% url 'students:student_list' %}">My Students</a></li>
+                                    </ul>
+                                </li>
+
                             {% elif  user.is_authenticated and user.active  and user.user_type == 'SENIOR_COUNSELOR' %}
                                 <li class="submenu">
                                     <a href="#"><i data-feather="briefcase"></i> <span> User Task Management</span> <span class="menu-arrow"></span></a>
                                     <ul>
                                         <li><a href="{% url 'lead_management:user_event_list' %}">View Assigned Lead</a></li>
+                                    </ul>
+                                </li>
+
+
+                                <li class="submenu">
+                                    <a href="#"><i data-feather="briefcase"></i> <span> Student Management</span> <span class="menu-arrow"></span></a>
+                                    <ul>
+                                        <li><a href="{% url 'students:student_list' %}">My Students</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -105,4 +121,4 @@
                     </div>
                 </div>
             </div>
-create_branch
+
