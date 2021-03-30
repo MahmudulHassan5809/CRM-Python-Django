@@ -17,6 +17,18 @@ class StudentDocumentForm(ModelForm):
 		model = StudentDocument
 		fields = ['name','status']
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.fields['name'].widget.attrs['disabled'] = 'disabled'
+		# self.fields['name'].widget.attrs['required'] = False
+		# self.fields['status'].widget.attrs['required'] = False
+
+		field_names = [field_name for field_name, _ in self.fields.items()]
+		for field_name in field_names:
+			field = self.fields.get(field_name)
+			field.label = ''
+
+
 
 
 document_objects= {
@@ -37,4 +49,4 @@ document_objects= {
 }
 StudentDocumentFormSet = formset_factory(StudentDocumentForm,extra=0)
 
-student_document_formset = StudentDocumentFormSet(initial=[{'name': x} for x in document_objects.values()])
+

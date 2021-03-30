@@ -44,11 +44,11 @@
 							</ul>
 
 						</div>
-			
-							
+
+
 							<div class="tab-content" id="myTabContent">
-							
-								
+
+
 								<div class="tab-pane fade show active" id="information" role="tabpanel" aria-labelledby="information-tab">
 									<div class="card">
 										<div class="card-body">
@@ -117,39 +117,67 @@
 
 								</div>
 
-								<div class="tab-pane fade show" id="document" role="tabpanel" aria-labelledby="document-tab">
-									<div class="card">
-										<div class="card-body">
-											<table class="document_table">
-	    
-	        {% for form in document_form_set.forms %}
-		        <thead>
-		            {% if forloop.first %}
-		                {% for field in form %}
-		                    <th>{{ field.label_tag }}</th>
-		                {% endfor %}
-		            {% endif %}
-		    </thead>
-	    <tbody id="test-body">
+		<div class="tab-pane fade show" id="document" role="tabpanel" aria-labelledby="document-tab">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+        				<table class="table table-nowrap mb-0">
+        					<thead>
+        						<th>Document Name</th>
+        						<th>Status</th>
+        					</thead>
+        					<tbody>
 
-	            		<tr>
-		                {% for field in form %}
-		                    
-			                  <td>{{ field }}</td>
-			                
-		                {% endfor %}
-		            </tr>
-	            
-	            
-	        
-	    </tbody>
-	    {% endfor %}
+        						{% for document in student_obj.documents.all %}
+        							<tr>
+        								<td>{{document.name}}</td>
+        								<td>{{document.status}}</td>
+        							</tr>
+        						{% endfor %}
+        					</tbody>
+        				</table>
+            		</div>
 
-	     <input id='add-row' class='btn btn-primary' type='button' value='Add' />
-	</table>
-										</div>
-									</div>
-								</div>
+
+
+					<form action="{% url 'students:add_student_document' student_obj.id %}" method="POST">
+						{% csrf_token %}
+
+
+
+						<div class="table-responsive">
+            				<table class="table table-nowrap mb-0">
+
+            					<tbody class="document-table">
+            						{% for k,v in  document_objects.items %}
+            						<tr>
+            							<td><input name="name" type="text" class="form-control" readonly value="{{v}}" required></td>
+            							<td>
+            								<select required class="form-control" name="status">
+											<option value="RECEIVED">RECEIVED</option>
+											<option value="NOT_RECEIVED">NOT RECEIVED</option>
+
+										</select>
+            							</td>
+            							<td><input class="delete-row btn btn-primary" type="button" value="Delete" />
+	  				</td>
+            						</tr>
+            						{% endfor %}
+            					</tbody>
+            				</table>
+            			</div>
+						<div class="d-flex">
+							<input type="submit" value="Save" class="btn btn-sm btn-primary rounded-0">
+							<input id='add-row' class='btn btn-primary btn-sm rounded-0 ml-5' type='button' value='Add' />
+						</div>
+					</form>
+
+				</div>
+
+
+				</div>
+			</div>
+
 
 								<div class="tab-pane fade show" id="application" role="tabpanel" aria-labelledby="application-tab">
 									<div class="card">
@@ -188,9 +216,30 @@
 
 {% block script %}
 	<script>
-		
+		 var row=1;
 	  	$(document).on("click", "#add-row", function () {
-		  	
+	  		var new_row = `<tr>
+	  				<td>
+	  				<input name="name" type="text" class="form-control" required /></td>
+	  				<td>
+	  					<select class="form-control" name="status" required>
+							<option value="RECEIVED">RECEIVED</option>
+							<option value="NOT_RECEIVED">NOT RECEIVED</option>
+
+						</select>
+	  				</td>
+	  				<td><input class="delete-row btn btn-primary" type="button" value="Delete" />
+	  				</td>
+	  				</tr>`;
+
+			 $('.document-table').append(new_row);
+			 row++;
+			 return false;
 		});
+
+		 $(document).on("click", ".delete-row", function () {
+		  	$(this).closest('tr').remove();
+		    return false;
+		 });
 	</script>
 {% endblock script %}

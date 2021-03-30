@@ -27,6 +27,6 @@ class StudentDocument(models.Model):
 		('RECEIVED','RECEIVED'),
 		('NOT RECEIVED','NOT RECEIVED')
 	)
-	student = models.OneToOneField(Student,on_delete=models.CASCADE,related_name='documents')
+	student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='documents')
 	name = models.CharField(max_length=255)
 	status = models.CharField(max_length=20,choices=STATUS_CHOICES)
