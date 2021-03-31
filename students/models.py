@@ -47,6 +47,7 @@ class StudentApplicationStatus(models.Model):
 	)
 	student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='status')
 	university_name = models.CharField(max_length=255)
+	status = models.CharField(max_length=40,choices=STATUS_CHOICES)
 
 
 

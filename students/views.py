@@ -10,14 +10,14 @@ from django.contrib.auth import get_user_model
 
 
 
-
+from django.db import transaction
 
 from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from lead_management.models import Lead,Event,TaskAssign
 from students.models import Student,StudentDocument,StudentCredentials
-from students.forms import StudentDocumentForm,StudentCredentialsForm
+from students.forms import StudentDocumentForm,StudentCredentialsForm,ApplicationStatusFormSet,STUDENT_DOCUMENT_INTITAL_DATA
 
 
 # Create your views here.
@@ -52,7 +52,8 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Student Details"
-	    
+	    context['application_status_form'] = ApplicationStatusFormSet(instance=self.object)
+
 	    if hasattr(self.object,'documents'):
 	    	context["document_form"] = StudentDocumentForm(initial={'documents' : self.object.documents.documents})
 	    else:
@@ -63,8 +64,8 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	    else:
 	    	context["credentials_form"] = StudentCredentialsForm()
 
-	    
-	    
+
+
 	    return context
 
 
@@ -104,3 +105,21 @@ class AddStudentCredentialsView(LoginRequiredMixin,View):
 
 
 		return redirect("students:student_detail",student_id)
+
+
+class AddStudentStatusView(LoginRequiredMixin,View):
+	def post(self,request,*args,**kwargs):
+		student_id = self.kwargs.get('student_id')
+		student_obj = get_object_or_404(Student,id=student_id)
+		form = ApplicationStatusFormSet(self.request.POST, instance=student_obj)
+
+		if form.is_valid():
+			with transaction.atomic():
+				form.instance = student_obj
+				form.save()
+				return redirect('students:student_detail', student_id)
+		else:
+			print(form.errors)
+			return self.render_to_response(self.get_context_data(form=form))
+		return super().form_valid(form)
+
