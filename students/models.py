@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from ckeditor.fields import RichTextField
+
 
 User = get_user_model()
 
@@ -18,15 +20,33 @@ class Student(models.Model):
 
 	objects = StudentQuerySet.as_manager()
 
+	# def has_documents_object(self):
+	# 	return hasattr(self, 'documents')
+
 
 
 
 
 class StudentDocument(models.Model):
+	student = models.OneToOneField(Student,on_delete=models.CASCADE,related_name='documents')
+	documents = RichTextField(null=True,blank=True)
+	# name = models.CharField(max_length=255)
+	# status = models.CharField(max_length=20,choices=STATUS_CHOICES)
+
+
+
+class StudentCredentials(models.Model):
+	student = models.OneToOneField(Student,on_delete=models.CASCADE,related_name='credentials')
+	credentials = RichTextField(null=True,blank=True)
+
+
+class StudentApplicationStatus(models.Model):
 	STATUS_CHOICES = (
-		('RECEIVED','RECEIVED'),
-		('NOT RECEIVED','NOT RECEIVED')
+		('Documents_Prepared','Documents Prepared'),
+		('Application_Done','Application Done')
 	)
-	student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='documents')
-	name = models.CharField(max_length=255)
-	status = models.CharField(max_length=20,choices=STATUS_CHOICES)
+	student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='status')
+	university_name = models.CharField(max_length=255)
+
+
+

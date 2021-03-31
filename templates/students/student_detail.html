@@ -35,7 +35,11 @@
 							    <a class="nav-link" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="false">Documents Checklist</a>
 							  </li>
 							  <li class="nav-item">
-							    <a class="nav-link" id="application-tab" data-toggle="tab" href="#application" role="tab" aria-controls="application" aria-selected="false">Application Status</a>
+							    <a class="nav-link" id="credentials-tab" data-toggle="tab" href="#credentials" role="tab" aria-controls="credentials" aria-selected="false">Applicant Credentials</a>
+							  </li>
+
+							  <li class="nav-item">
+							    <a class="nav-link" id="status-tab" data-toggle="tab" href="#status" role="tab" aria-controls="status" aria-selected="false">Applicant Status</a>
 							  </li>
 
 							  <li class="nav-item">
@@ -120,56 +124,21 @@
 		<div class="tab-pane fade show" id="document" role="tabpanel" aria-labelledby="document-tab">
 			<div class="card">
 				<div class="card-body">
-					<div class="table-responsive">
-        				<table class="table table-nowrap mb-0">
-        					<thead>
-        						<th>Document Name</th>
-        						<th>Status</th>
-        					</thead>
-        					<tbody>
-
-        						{% for document in student_obj.documents.all %}
-        							<tr>
-        								<td>{{document.name}}</td>
-        								<td>{{document.status}}</td>
-        							</tr>
-        						{% endfor %}
-        					</tbody>
-        				</table>
-            		</div>
+					
 
 
 
+					
 					<form action="{% url 'students:add_student_document' student_obj.id %}" method="POST">
 						{% csrf_token %}
+						{{document_form.media}}
+						{{document_form|crispy}}
 
-
-
-						<div class="table-responsive">
-            				<table class="table table-nowrap mb-0">
-
-            					<tbody class="document-table">
-            						{% for k,v in  document_objects.items %}
-            						<tr>
-            							<td><input name="name" type="text" class="form-control" readonly value="{{v}}" required></td>
-            							<td>
-            								<select required class="form-control" name="status">
-											<option value="RECEIVED">RECEIVED</option>
-											<option value="NOT_RECEIVED">NOT RECEIVED</option>
-
-										</select>
-            							</td>
-            							<td><input class="delete-row btn btn-primary" type="button" value="Delete" />
-	  				</td>
-            						</tr>
-            						{% endfor %}
-            					</tbody>
-            				</table>
-            			</div>
-						<div class="d-flex">
-							<input type="submit" value="Save" class="btn btn-sm btn-primary rounded-0">
-							<input id='add-row' class='btn btn-primary btn-sm rounded-0 ml-5' type='button' value='Add' />
-						</div>
+						
+						
+						<input type="submit" value="Save" class="btn btn-sm btn-primary rounded-0">
+							
+						
 					</form>
 
 				</div>
@@ -179,10 +148,29 @@
 			</div>
 
 
-								<div class="tab-pane fade show" id="application" role="tabpanel" aria-labelledby="application-tab">
+								<div class="tab-pane fade show" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
 									<div class="card">
 										<div class="card-body">
-											Application Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+											<form action="{% url 'students:add_student_credentials' student_obj.id %}" method="POST">
+													{% csrf_token %}
+													{{credentials_form.media}}
+													{{credentials_form|crispy}}
+
+													
+													
+													<input type="submit" value="Save" class="btn btn-sm btn-primary rounded-0">
+														
+													
+											</form>
+										</div>
+									</div>
+
+								</div>
+
+								<div class="tab-pane fade show" id="status" role="tabpanel" aria-labelledby="status-tab">
+									<div class="card">
+										<div class="card-body">
+											Visa Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 											tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
 											quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
 											consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
@@ -216,30 +204,32 @@
 
 {% block script %}
 	<script>
-		 var row=1;
-	  	$(document).on("click", "#add-row", function () {
-	  		var new_row = `<tr>
-	  				<td>
-	  				<input name="name" type="text" class="form-control" required /></td>
-	  				<td>
-	  					<select class="form-control" name="status" required>
-							<option value="RECEIVED">RECEIVED</option>
-							<option value="NOT_RECEIVED">NOT RECEIVED</option>
+	
+	
+		//  var row=1;
+	 //  	$(document).on("click", "#add-row", function () {
+	 //  		var new_row = `<tr>
+	 //  				<td>
+	 //  				<input name="name" type="text" class="form-control" required /></td>
+	 //  				<td>
+	 //  					<select class="form-control" name="status" required>
+		// 					<option value="RECEIVED">RECEIVED</option>
+		// 					<option value="NOT_RECEIVED">NOT RECEIVED</option>
 
-						</select>
-	  				</td>
-	  				<td><input class="delete-row btn btn-primary" type="button" value="Delete" />
-	  				</td>
-	  				</tr>`;
+		// 				</select>
+	 //  				</td>
+	 //  				<td><input class="delete-row btn btn-primary" type="button" value="Delete" />
+	 //  				</td>
+	 //  				</tr>`;
 
-			 $('.document-table').append(new_row);
-			 row++;
-			 return false;
-		});
+		// 	 $('.document-table').append(new_row);
+		// 	 row++;
+		// 	 return false;
+		// });
 
-		 $(document).on("click", ".delete-row", function () {
-		  	$(this).closest('tr').remove();
-		    return false;
-		 });
+		//  $(document).on("click", ".delete-row", function () {
+		//   	$(this).closest('tr').remove();
+		//     return false;
+		//  });
 	</script>
 {% endblock script %}

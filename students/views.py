@@ -16,8 +16,8 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from lead_management.models import Lead,Event,TaskAssign
-from students.models import Student,StudentDocument
-from students.forms import StudentDocumentForm,StudentDocumentFormSet,document_objects
+from students.models import Student,StudentDocument,StudentCredentials
+from students.forms import StudentDocumentForm,StudentCredentialsForm
 
 
 # Create your views here.
@@ -52,8 +52,19 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	def get_context_data(self, **kwargs):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Student Details"
-	    # context['document_form_set'] = StudentDocumentFormSet(initial=[{'name': x} for x in document_objects.values()])
-	    context["document_objects"] = document_objects
+	    
+	    if hasattr(self.object,'documents'):
+	    	context["document_form"] = StudentDocumentForm(initial={'documents' : self.object.documents.documents})
+	    else:
+	    	context["document_form"] = StudentDocumentForm(initial={'documents' : STUDENT_DOCUMENT_INTITAL_DATA})
+
+	    if hasattr(self.object,'credentials'):
+	    	context["credentials_form"] = StudentCredentialsForm(initial={'credentials' : self.object.credentials.credentials})
+	    else:
+	    	context["credentials_form"] = StudentCredentialsForm()
+
+	    
+	    
 	    return context
 
 
@@ -63,20 +74,33 @@ class AddStudentDocumentView(LoginRequiredMixin,View):
 		student_id = self.kwargs.get('student_id')
 		student_obj = get_object_or_404(Student,id=student_id)
 
-		document_list = request.POST.getlist('name')
-		document_status_list = request.POST.getlist('status')
+		documents = request.POST.get('documents')
 
+		if hasattr(student_obj,'documents'):
+			student_obj.documents.documents = document
+			student_obj.documents.save()
+		else:
+			StudentDocument.objects.create(student=student_obj,documents=documents)
 
-		# aList = [StudentDocument(student=student_obj,name=document,status=document_status_list[index]) for index,document in enumerate(document_list)]
-		# StudentDocument.objects.bulk_create(aList)
-
-		for index,document in enumerate(document_list):
-			if document != '':
-				print(document)
-				StudentDocument.objects.update_or_create(student=student_obj,name__icontains=document,defaults={'status' : document_status_list[index]})
 
 		return redirect("students:student_detail",student_id)
 
 
 
 
+
+class AddStudentCredentialsView(LoginRequiredMixin,View):
+	def post(self,request,*args,**kwargs):
+		student_id = self.kwargs.get('student_id')
+		student_obj = get_object_or_404(Student,id=student_id)
+
+		credentials = request.POST.get('credentials')
+
+		if hasattr(student_obj,'credentials'):
+			student_obj.credentials.credentials = credentials
+			student_obj.credentials.save()
+		else:
+			StudentCredentials.objects.create(student=student_obj,credentials=credentials)
+
+
+		return redirect("students:student_detail",student_id)
