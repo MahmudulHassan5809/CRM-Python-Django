@@ -15,13 +15,14 @@
 	<div class="row justify-content-lg-center">
 						<div class="col-md-12">
 						<div class="text-center">
+
 							<h2>{{student_obj.lead.name}} <i class="fas fa-certificate text-primary small" data-toggle="tooltip" data-placement="top" title="" data-original-title="Verified"></i></h2>
 							<ul class="list-inline">
 								<li class="list-inline-item">
 									<i class="far fa-email"></i> <span>{{student_obj.lead.email}}</span>
 								</li>
 								<li class="list-inline-item">
-									<i class="fas fa-map-marker-alt"></i> {{student_obj.lead.present_address}}
+									<i class="fas fa-map-marker-alt"></i> {{student_obj.lead.present_address}} 
 								</li>
 								<li class="list-inline-item">
 									<i class="far fa-calendar-alt"></i> <span>Joined {{student_obj.lead.created_at}}</span>
@@ -30,21 +31,31 @@
 
 							<ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
 							  <li class="nav-item">
-							    <a class="nav-link active" id="information-tab" data-toggle="tab" href="#information" role="tab" aria-controls="information" aria-selected="true">Information Collection</a>
+							    <a class="nav-link {% if  request.session.active_tab == 'information'  %}
+							    	active
+							    {% endif %}" id="information-tab" data-toggle="tab" href="#information" role="tab" aria-controls="information" aria-selected="true">Information Collection</a>
 							  </li>
-							  <li class="nav-item">
+							  <li class="nav-item {% if  request.session.active_tab == 'documents'  %}
+							    	active
+							    {% endif %}">
 							    <a class="nav-link" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="false">Documents Checklist</a>
 							  </li>
-							  <li class="nav-item">
+							  <li class="nav-item {% if  request.session.active_tab == 'credentials'  %}
+							    	active
+							    {% endif %}">
 							    <a class="nav-link" id="credentials-tab" data-toggle="tab" href="#credentials" role="tab" aria-controls="credentials" aria-selected="false">Applicant Credentials</a>
 							  </li>
 
 							  <li class="nav-item">
-							    <a class="nav-link" id="status-tab" data-toggle="tab" href="#status" role="tab" aria-controls="status" aria-selected="false">Applicant Status</a>
+							    <a class="nav-link {% if  request.session.active_tab == 'application_status'  %}
+							    	active
+							    {% endif %}" id="status-tab" data-toggle="tab" href="#status" role="tab" aria-controls="status" aria-selected="false">Applicant Status</a>
 							  </li>
 
 							  <li class="nav-item">
-							    <a class="nav-link" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="false">Visa Status</a>
+							    <a class="nav-link {% if  request.session.active_tab == 'visa_status'  %}
+							    	active
+							    {% endif %}" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="false">Visa Status</a>
 							  </li>
 							</ul>
 
@@ -54,9 +65,12 @@
 							<div class="tab-content" id="myTabContent">
 
 
-								<div class="tab-pane fade show active" id="information" role="tabpanel" aria-labelledby="information-tab">
+								<div class="tab-pane fade show {% if  request.session.active_tab == 'information'  %}
+							    	active show
+							    {% endif %}" id="information" role="tabpanel" aria-labelledby="information-tab">
 									<div class="card">
 										<div class="card-body">
+											<a target="_blank" href="{% url 'lead_management:lead_details' student_obj.lead.id %}" class="btn btn-primary btn-sm rounded-0 mb-3">Update</a>
 											<div class="table-responsive">
 													<table class="table table-nowrap mb-0">
 														<tbody>
@@ -106,6 +120,11 @@
 															</tr>
 
 															<tr>
+																<th>Lead Quality</th>
+																<td>{{student_obj.lead.get_lead_quality_display}}</td>
+															</tr>
+
+															<tr>
 																<th>Note</th>
 																<td>{{student_obj.lead.note}}</td>
 															</tr>
@@ -122,7 +141,9 @@
 
 								</div>
 
-		<div class="tab-pane fade show" id="document" role="tabpanel" aria-labelledby="document-tab">
+		<div class="tab-pane fade {% if  request.session.active_tab == 'documents'  %}
+							    	active show
+							    {% endif %}" id="document" role="tabpanel" aria-labelledby="document-tab">
 			<div class="card">
 				<div class="card-body">
 
@@ -149,7 +170,9 @@
 			</div>
 
 
-								<div class="tab-pane fade show" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+								<div class="tab-pane fade {% if  request.session.active_tab == 'credentials'  %}
+							    	active show
+							    {% endif %}" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
 									<div class="card">
 										<div class="card-body">
 											<form action="{% url 'students:add_student_credentials' student_obj.id %}" method="POST">
@@ -168,10 +191,10 @@
 
 								</div>
 
-								<div class="fade show" id="status" role="tabpanel" aria-labelledby="status-tab">
-									<div class="card">
-										<div class="card-body">
-											<form method="POST" action="{% url 'students:add_student_status' student_obj.id %}">
+								<div class="tab-pane fade {% if  request.session.active_tab == 'application_status'  %}
+							    	active show
+							    {% endif %}" id="status" role="tabpanel" aria-labelledby="status-tab">
+									<form method="POST" action="{% url 'students:student_application_status' student_obj.id %}">
 												{% csrf_token %}
 												<div class="table-responsive">
             <table class="table table-nowrap mb-0">
@@ -196,7 +219,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                             {{ field.errors.as_ul }}
-                                            {{ field|as_crispy_field }}
+                                            {{ field }}
                                         </td>
                                     {% endfor %}
                                 </tr>
@@ -205,21 +228,49 @@
                     </div>
                     					<input type="submit" value="Save" class="btn btn-primary btn-sm rounded-0">
 											</form>
-										</div>
-									</div>
 
 								</div>
 
 
-								<div class="tab-pane fade show" id="visa" role="tabpanel" aria-labelledby="visa-tab">
+								<div class="tab-pane fade {% if  request.session.active_tab == 'visa_status'  %}
+							    	active show
+							    {% endif %}" id="visa" role="tabpanel" aria-labelledby="visa-tab">
 									<div class="card">
 										<div class="card-body">
-											Visa Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-											tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-											quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-											consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-											cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-											proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+											<form method="POST" action="{% url 'students:student_visa_status' student_obj.id %}">
+												{% csrf_token %}
+												<div class="table-responsive">
+            <table class="table table-nowrap mb-0">
+                            {{ visa_status_form.management_form }}
+
+                            {% for form in visa_status_form.forms %}
+                                {% if forloop.first %}
+                                    <thead>
+                                    <tr>
+                                        {% for field in form.visible_fields %}
+                                            <th>{{ field.label|capfirst }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                    </thead>
+                                {% endif %}
+                                <tr class="{% cycle "row1" "row2" %} formset_row2 border-0">
+                                    {% for field in form.visible_fields %}
+                                        <td class="inline_td">
+                                            {% if forloop.first %}
+                                                {% for hidden in form.hidden_fields %}
+                                                    {{ hidden }}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {{ field.errors.as_ul }}
+                                            {{ field }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    					<input type="submit" value="Save" class="btn btn-primary btn-sm rounded-0">
+											</form>
 										</div>
 									</div>
 
@@ -236,8 +287,17 @@
     <script type="text/javascript">
         $('.formset_row').formset({
             addText: '<span class="m-0 p-0"><i class="fa fa-plus-circle" aria-hidden="true"></i></span>',
-            deleteText: '<i class="fa fa-minus" aria-hidden="true"></i>',
+            deleteText: '<span class="m-0 p-0 application_status_minus"><i class="fa fa-minus" aria-hidden="true"></i></span>',
             prefix: '{{ application_status_form.prefix }}',
         });
+
+
+        $('.formset_row2').formset({
+            addText: '<span class="m-0 p-0"><i class="fa fa-plus-circle" aria-hidden="true"></i></span>',
+            deleteText: '<span class="m-0 p-0 visa_status_minus"><i class="fa fa-minus" aria-hidden="true"></i></span>',
+            prefix: '{{ visa_status_form.prefix }}',
+        });
+
+       $(".visa_status_minus").show();
     </script>
 {% endblock script %}

@@ -141,6 +141,8 @@
                 $('label[for="' + del.attr('id') + '"]').hide();
                 del.remove();
             }
+            
+             insertDeleteLink(row);
             if (hasChildElements(row)) {
                 row.addClass(options.formCssClass);
                 if (row.is(':visible')) {

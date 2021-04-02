@@ -85,18 +85,8 @@ class CreateSingleLead(SuccessMessageMixin,LoginRequiredMixin,SuperAdminRequired
 		country_of_interest = form.cleaned_data.get('country_of_interest')
 		country_of_interest = form.cleaned_data.get('country_of_interest')
 		country_of_interest =  country_of_interest.rstrip(',')
-		# country_of_interest_list = str(country_of_interest).split(',')
-		# country_of_interest_list = set(country_of_interest_list)
-
-		# tmp_list = []
-		# for country in country_of_interest_list:
-		# 	tmp_dict = {}
-		# 	tmp_dict["country"] = country
-		# 	tmp_list.append(tmp_dict)
-
 		obj = form.save(commit=False)
 		obj.created_by = self.request.user
-		# obj.country_of_interest = tmp_list
 		obj.save()
 		return redirect('lead_management:lead_list',obj.event_id)
 
@@ -205,7 +195,6 @@ class LeadListView(LoginRequiredMixin,SuperAdminRequiredMixin,generic.ListView):
 
 
 class LeadManagementView(LoginRequiredMixin,SuperAdminRequiredMixin,SingleTableView):
-	# paginator_class = LazyPaginator
 	def get(self,request,*args,**kwargs):
 		event_id = self.kwargs.get('event_id',None)
 		lead_type = self.kwargs.get('type',None)
@@ -371,6 +360,7 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 	    context['lead_id'] = self.kwargs.get("pk")
 	    context['check_next_lead'] = TaskAssign.objects.filter(lead__id__gt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
 	    context['check_prev_lead'] = TaskAssign.objects.filter(lead__id__lt=self.object.id,assignee=self.request.user).order_by('lead__id').first()
+	    self.request.session['active_tab'] = 'information'
 	    return context
 
 

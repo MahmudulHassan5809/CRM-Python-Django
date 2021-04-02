@@ -75,9 +75,15 @@ class Lead(models.Model):
                 ('OTHER', 'Other'),
             )
         ),
-        ('FILE_OPENED', 'File Opened'),
-        
+        ('FILE_OPENED', 'File Opened'),        
     ]
+
+    LEAD_QUALITY_CHOICE = (
+        ('EXCELLENT','Excellent'),
+        ('GOOD','Good'),
+        ('AVERAGE','Average'), 
+        ('BAD','Bad')
+    )
 
     created_by = models.ForeignKey(User,on_delete=models.CASCADE,related_name="leads")
     event = models.ForeignKey(Event,on_delete=models.CASCADE,related_name="leads")
@@ -92,6 +98,7 @@ class Lead(models.Model):
     created_at = models.DateField(auto_now_add=True)
     assigned = models.BooleanField(default=False)
     status = models.CharField(max_length=20,choices=LEAD_STATUS_CHOICE,default='NEW')
+    lead_quality = models.CharField(max_length=30,choices=LEAD_QUALITY_CHOICE)
     note =  RichTextField(null=True,blank=True)
 
     objects = LeadQuerySet.as_manager()

@@ -41,15 +41,6 @@ class LoginView(SuccessMessageMixin, LoginView):
     template_name = 'accounts/login.html'
     success_message = 'You Have Successfully LoggedIn.'
 
-    # def get_success_url(self):
-    #     user = self.request.user
-    #     if user.user_type == "STUDENT":
-    #         return reverse('accounts:student_dashboard')
-    #     elif user.user_type == "TEACHER":
-    #         return reverse('accounts:teacher_dashboard')
-    #     elif user.is_superuser:
-    #         return reverse('admin:login')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Login'
@@ -68,11 +59,10 @@ class DashboardView(LoginRequiredMixin,View):
                 'title' : 'SuperAdmin'
             }
             return render(request,'accounts/super_user/dashboard.html')
-        elif request.user.active and request.user.user_type == 'SENIOR_COUNSELOR':
+        elif request.user.active:
             context = {
                 'title' : 'Dashboard'
             }
-
             return render(request,'accounts/user/dashboard.html')
         else:
             print(request.user,request.user.active,request.user.user_type)

@@ -17,7 +17,7 @@ from accounts.mixins import SuperAdminRequiredMixin
 from branch.models import Branch
 from lead_management.models import Lead,Event,TaskAssign
 from students.models import Student,StudentDocument,StudentCredentials
-from students.forms import StudentDocumentForm,StudentCredentialsForm,ApplicationStatusFormSet,STUDENT_DOCUMENT_INTITAL_DATA
+from students.forms import StudentDocumentForm,StudentCredentialsForm,ApplicationStatusFormSet,VisaStatusFormSet,STUDENT_DOCUMENT_INTITAL_DATA,STUDENT_CREDENTIALS_INTITAL_DATA
 
 
 # Create your views here.
@@ -27,11 +27,14 @@ class StudentListView(LoginRequiredMixin,generic.ListView):
 	paginate_by = 10
 	context_object_name = 'student_list'
 
-	def get_query_set(self,**kwargs):
-		qs = super().get_query_set()
+	def get_queryset(self,**kwargs):
+		qs = super().get_queryset()
 
-		if self.request.user.user_type != 'SUPER_ADMIN':
-			qs = qs.filter_by_assignee(self.request.id)
+		if self.request.user.user_type != 'SUPER_ADMIN' and self.request.user.user_type != 'ADMISSION_OFFICER':
+			qs = qs.filter_by_assignee(self.request.user.id)
+
+		if self.request.user.user_type == 'ADMISSION_OFFICER':
+			qs = qs.filter_by_file_opened()
 
 		return qs
 
@@ -53,6 +56,7 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	    context = super().get_context_data(**kwargs)
 	    context['title'] = "Student Details"
 	    context['application_status_form'] = ApplicationStatusFormSet(instance=self.object)
+	    context['visa_status_form'] = VisaStatusFormSet(instance=self.object)
 
 	    if hasattr(self.object,'documents'):
 	    	context["document_form"] = StudentDocumentForm(initial={'documents' : self.object.documents.documents})
@@ -62,10 +66,12 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	    if hasattr(self.object,'credentials'):
 	    	context["credentials_form"] = StudentCredentialsForm(initial={'credentials' : self.object.credentials.credentials})
 	    else:
-	    	context["credentials_form"] = StudentCredentialsForm()
+	    	context["credentials_form"] = StudentCredentialsForm(initial={'credentials' : STUDENT_CREDENTIALS_INTITAL_DATA})
 
 
 
+	    # print(self.request.META.get('HTTP_REFERER'),'--------------')
+	    # self.request.session['active_tab'] = 'information'	
 	    return context
 
 
@@ -78,12 +84,14 @@ class AddStudentDocumentView(LoginRequiredMixin,View):
 		documents = request.POST.get('documents')
 
 		if hasattr(student_obj,'documents'):
-			student_obj.documents.documents = document
+			student_obj.documents.documents = documents
 			student_obj.documents.save()
 		else:
 			StudentDocument.objects.create(student=student_obj,documents=documents)
 
 
+		
+		request.session['active_tab'] = 'documents'
 		return redirect("students:student_detail",student_id)
 
 
@@ -104,14 +112,18 @@ class AddStudentCredentialsView(LoginRequiredMixin,View):
 			StudentCredentials.objects.create(student=student_obj,credentials=credentials)
 
 
+		request.session['active_tab'] = 'credentials'
 		return redirect("students:student_detail",student_id)
 
 
-class AddStudentStatusView(LoginRequiredMixin,View):
+class StudentApplicationStatusView(LoginRequiredMixin,View):
 	def post(self,request,*args,**kwargs):
 		student_id = self.kwargs.get('student_id')
 		student_obj = get_object_or_404(Student,id=student_id)
 		form = ApplicationStatusFormSet(self.request.POST, instance=student_obj)
+
+		
+		request.session['active_tab'] = 'application_status'
 
 		if form.is_valid():
 			with transaction.atomic():
@@ -123,3 +135,22 @@ class AddStudentStatusView(LoginRequiredMixin,View):
 			return self.render_to_response(self.get_context_data(form=form))
 		return super().form_valid(form)
 
+
+
+class StudentVisaStatusView(LoginRequiredMixin,View):
+	def post(self,request,*args,**kwargs):
+		student_id = self.kwargs.get('student_id')
+		student_obj = get_object_or_404(Student,id=student_id)
+		form = VisaStatusFormSet(self.request.POST, instance=student_obj)
+
+		request.session['active_tab'] = 'visa_status'
+
+		if form.is_valid():
+			with transaction.atomic():
+				form.instance = student_obj
+				form.save()
+				return redirect('students:student_detail', student_id)
+		else:
+			print(form.errors)
+			return self.render_to_response(self.get_context_data(form=form))
+		return super().form_valid(form)

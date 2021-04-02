@@ -62,6 +62,9 @@
                               {{form.status|as_crispy_field}}
                             </div>
                             <div class="col">
+                                 {{form.lead_quality|as_crispy_field}}
+                            </div>
+                            <div class="col">
                               {{form.note|as_crispy_field}}
                             </div>
 
@@ -79,9 +82,13 @@
                             <div class="col my-auto">
                                 <strong>Lead Creation Date: </strong> {{lead_obj.created_at}}
                             </div>
-                            <div class="col my-auto">
-                                <strong>Currently Assigned To : </strong> {{lead_obj.student.assignee.username|title}}
+                            
+                            {% if lead_obj.student %}
+                                <div class="col my-auto">
+                                <strong>File Opened By: </strong> {{lead_obj.student.assignee.username|title}}
                             </div>
+                            {% endif %}
+                            
                         </div>
 
 

@@ -9,7 +9,7 @@ from django.forms.models import inlineformset_factory
 
 import mimetypes
 
-from .models import StudentDocument,StudentCredentials,StudentApplicationStatus,Student
+from .models import StudentDocument,StudentCredentials,StudentApplicationStatus,Student,StudentVisaStatus
 
 
 STUDENT_DOCUMENT_INTITAL_DATA = """<ol>
@@ -25,6 +25,25 @@ STUDENT_DOCUMENT_INTITAL_DATA = """<ol>
 					<li><b>Job Experience:</b>  Not Received</li>
 					<li><b>Letter of Recommendation (Academic):</b>  Not Received</li>
 					<li><b>Letter of Recommendation (Professional):</b>  Not Received</li>
+				</ol>"""
+
+
+
+STUDENT_CREDENTIALS_INTITAL_DATA = """<ol>
+					<li>
+						<b>Email ID:</b>  xyz@gmail.com 
+						<br> 
+						<b>Password:</b>
+					</li>
+					<li>
+						<b>University Information:</b>  
+						<br> 
+						<b>Portal Link:</b>
+						<br>
+						<b>Username:</b>
+						<br> 
+						<b>Password:</b>
+					</li>
 				</ol>"""
 
 
@@ -57,10 +76,32 @@ class StudentCredentialsForm(ModelForm):
 
 
 class StudentApplicationStatusForm(forms.ModelForm):
-    class Meta:
-        model = StudentApplicationStatus
-        fields = '__all__'
+	class Meta:
+		model = StudentApplicationStatus
+		fields = ["title","status"]
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control'
 
 
 ApplicationStatusFormSet = inlineformset_factory(
     Student, StudentApplicationStatus, form=StudentApplicationStatusForm, extra=1)
+
+
+
+class StudentVisaStatusForm(forms.ModelForm):
+	class Meta:
+		model = StudentVisaStatus
+		fields = ["title","status"]
+
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for visible in self.visible_fields():
+			visible.field.widget.attrs['class'] = 'form-control'
+
+
+VisaStatusFormSet = inlineformset_factory(
+    Student, StudentVisaStatus, form=StudentVisaStatusForm, extra=1)
