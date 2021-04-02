@@ -22,16 +22,17 @@
 									<i class="far fa-email"></i> <span>{{student_obj.lead.email}}</span>
 								</li>
 								<li class="list-inline-item">
-									<i class="fas fa-map-marker-alt"></i> {{student_obj.lead.present_address}} 
+									<i class="fas fa-map-marker-alt"></i> {{student_obj.lead.present_address}}
 								</li>
 								<li class="list-inline-item">
 									<i class="far fa-calendar-alt"></i> <span>Joined {{student_obj.lead.created_at}}</span>
 								</li>
 							</ul>
 
+
 							<ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
 							  <li class="nav-item">
-							    <a class="nav-link {% if  request.session.active_tab == 'information'  %}
+							    <a class="nav-link {% if  request.session.active_tab == 'information' or  active_tab == 'information'  %}
 							    	active
 							    {% endif %}" id="information-tab" data-toggle="tab" href="#information" role="tab" aria-controls="information" aria-selected="true">Information Collection</a>
 							  </li>
@@ -71,7 +72,7 @@
 							<div class="tab-content" id="myTabContent">
 
 
-								<div class="tab-pane fade show {% if  request.session.active_tab == 'information'  %}
+								<div class="tab-pane fade show {% if  request.session.active_tab == 'information' or active_tab == 'information'   %}
 							    	active show
 							    {% endif %}" id="information" role="tabpanel" aria-labelledby="information-tab">
 									<div class="card">

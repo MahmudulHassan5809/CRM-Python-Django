@@ -73,9 +73,9 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	    else:
 	    	context["payment_form"] = StudentPaymentForm()
 
-
+	    context['active_tab'] = self.request.session.get('active_tab',"information")
 	    # print(self.request.META.get('HTTP_REFERER'),'--------------')
-	    # self.request.session['active_tab'] = 'information'	
+	    # self.request.session['active_tab'] = 'information'
 	    return context
 
 
@@ -94,7 +94,7 @@ class AddStudentDocumentView(LoginRequiredMixin,View):
 			StudentDocument.objects.create(student=student_obj,documents=documents)
 
 
-		
+
 		request.session['active_tab'] = 'documents'
 		return redirect("students:student_detail",student_id)
 
@@ -144,7 +144,7 @@ class StudentApplicationStatusView(LoginRequiredMixin,View):
 		student_obj = get_object_or_404(Student,id=student_id)
 		form = ApplicationStatusFormSet(self.request.POST, instance=student_obj)
 
-		
+
 		request.session['active_tab'] = 'application_status'
 
 		if form.is_valid():
