@@ -60,3 +60,5 @@ Negative Response > Not Interested, Uninformed, Not Qualified, Self-Applied, Oth
 File Opened (Then assign this Lead into Students list)
 
 Add Previous and Next Buttons in the Task Management (Indiviudal Lists)
+
+--- X ---- X ----
