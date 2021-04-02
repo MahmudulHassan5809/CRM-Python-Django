@@ -73,18 +73,25 @@ class StudentApplicationStatus(models.Model):
 		verbose_name_plural = "4. Student Application Status"
 
 
+class StudentVisaStatusQuerySet(models.QuerySet):
+    def filter_by_status(self,status):
+        return self.filter(status=status)
+
 
 class StudentVisaStatus(models.Model):
 	STATUS_CHOICES = (
 		('READY_TO_APPLY','Ready to Apply for Visa'),
 		('DOCUMENTS_PREPARED','Documents Prepared'),
 		('APPLICATION_DONE','Application Complete'),
-		('VISA_RECEIVED','Visa Received'),
+		('VISA_APPROVED','Visa Approved'),
 		('VISA_REJECTED','Visa Rejected')
 	)
 	student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name='visa_status')
 	title = models.CharField(max_length=255)
 	status = models.CharField(max_length=40,choices=STATUS_CHOICES)
+
+
+	objects = StudentVisaStatusQuerySet.as_manager()
 
 	class Meta:
 		verbose_name_plural = "4. Student Application Status"
@@ -97,4 +104,3 @@ class StudentPayment(models.Model):
 
 	class Meta:
 		verbose_name_plural = "3.Student Payment History"
-		

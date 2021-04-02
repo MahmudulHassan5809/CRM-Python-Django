@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect,get_object_or_404,HttpResponse
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
+from django.db.models import Count
 from django.db.models import Prefetch
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -351,7 +354,7 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 		user = self.request.POST.get('user')
 		obj = form.save()
 		Student.objects.update_or_create(lead=obj,branch=obj.lead_task.branch,event=obj.event,defaults={'assignee_id': user})
-		return super(LeadDetailsView, self).form_valid(form)		
+		return super(LeadDetailsView, self).form_valid(form)
 
 
 	def get_context_data(self, **kwargs):
@@ -370,3 +373,10 @@ class LeadDetailsView(SuccessMessageMixin,LoginRequiredMixin,generic.UpdateView)
 
 
 
+class EventAnalysisChart(LoginRequiredMixin,View):
+	def get(self,request,*args,**kwargs):
+		event_id = self.kwargs.get('event_id');
+		qs = TaskAssign.objects.filter(event_id=event_id).values('assignee__username').annotate(dcount=Count('assignee'))
+
+		# html = render_to_string('accounts/super_user/chart/_event_analysis.html', {'event_data': qs})
+		return JsonResponse(list(qs), safe=False)

@@ -29,6 +29,6 @@ urlpatterns = [
     path('user/lead/<int:event_id>/', views.UserLeadListView.as_view(),name='user_lead_list'),
 
 
-
+    path('event-analysis-chart/<int:event_id>/',views.EventAnalysisChart.as_view(),name='event_pie_chart')
 
 ]

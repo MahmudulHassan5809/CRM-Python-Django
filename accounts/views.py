@@ -18,6 +18,8 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from .forms import CustomUserCreationForm
 from django.contrib.auth import get_user_model
+from lead_management.models import Lead,Event
+from students.models import StudentVisaStatus
 
 User = get_user_model()
 
@@ -30,7 +32,7 @@ User = get_user_model()
 
 def load_all_user(request):
     all_user = User.objects.filter(active=True)
-    
+
     return render(request, 'accounts/user_dropdown_list_options.html', {'all_user': all_user})
 
 
@@ -55,10 +57,33 @@ class LoginView(SuccessMessageMixin, LoginView):
 class DashboardView(LoginRequiredMixin,View):
     def get(self,request,*arg,**kwargs):
         if request.user.is_superuser and request.user.active and request.user.user_type == 'SUPER_ADMIN':
+
+            total_lead = Lead.objects.all().count()
+
+
+            total_unassigned_lead = Lead.objects.filter(assigned=False).count()
+            total_event = Event.objects.all().count()
+
+            event_qs = Event.objects.all().only('name')
+
+            total_upcoming_event = Event.objects.upcoming_event().count()
+            total_file_opened = Lead.objects.filter_by_status("FILE_OPENED").count()
+            total_visa_approved = StudentVisaStatus.objects.filter_by_status("VISA_APPROVED").count()
+
+
+
+
             context = {
-                'title' : 'SuperAdmin'
+                'title' : 'SuperAdmin',
+                'total_lead' : total_lead,
+                'total_unassigned_lead' : total_unassigned_lead,
+                'total_event' : total_event,
+                'total_upcoming_event' : total_upcoming_event,
+                'total_file_opened' : total_file_opened,
+                'total_visa_approved' : total_visa_approved,
+                'event_qs' : event_qs
             }
-            return render(request,'accounts/super_user/dashboard.html')
+            return render(request,'accounts/super_user/dashboard.html',context)
         elif request.user.active:
             context = {
                 'title' : 'Dashboard'
@@ -69,8 +94,8 @@ class DashboardView(LoginRequiredMixin,View):
 
 
 
-        
-        
+
+
 
 class AddUserView(LoginRequiredMixin,SuperAdminRequiredMixin,View):
     def get(self,request,*arg,**kwargs):

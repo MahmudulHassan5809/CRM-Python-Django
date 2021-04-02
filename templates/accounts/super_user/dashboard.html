@@ -1,1 +1,229 @@
 {% extends "base.html" %}
+
+
+{% block title %}
+    {{ block.super }}
+    {{title}}
+{% endblock title %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="dash-widget-header">
+                    <span class="dash-widget-icon bg-1">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    <div class="dash-count">
+                        <div class="dash-title">Total Lead</div>
+                        <div class="dash-counts">
+                            <p>{{total_lead}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress progress-sm mt-3">
+                    <div class="progress-bar bg-5" role="progressbar" style="width: {{total_lead}}%" aria-valuenow="{{total_lead}}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p class="text-muted mt-3 mb-0">{{total_unassigned_lead}} are reaming to be assigned.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="dash-widget-header">
+                    <span class="dash-widget-icon bg-2">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    <div class="dash-count">
+                        <div class="dash-title">Total Event</div>
+                        <div class="dash-counts">
+                            <p>{{total_event}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress progress-sm mt-3">
+                    <div class="progress-bar bg-6" role="progressbar" style="width: {{total_event}}%" aria-valuenow="{{total_event}}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p class="text-success mt-3 mb-0">
+                We have {{total_upcoming_event}} upcoming events.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="dash-widget-header">
+                    <span class="dash-widget-icon bg-3">
+                        <i class="fas fa-file-alt"></i>
+                    </span>
+                    <div class="dash-count">
+                        <div class="dash-title">File Opened</div>
+                        <div class="dash-counts">
+                            <p>{{total_file_opened}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress progress-sm mt-3">
+                    <div class="progress-bar bg-7" role="progressbar" style="width: {{total_file_opened}}%" aria-valuenow="{{total_file_opened}}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p class="text-muted mt-3 mb-0">
+                   {{total_file_opened}} opened out of {{total_lead}} leads.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="dash-widget-header">
+                    <span class="dash-widget-icon bg-4">
+                        <i class="far fa-file"></i>
+                    </span>
+                    <div class="dash-count">
+                        <div class="dash-title">Visa Approved</div>
+                        <div class="dash-counts">
+                            <p>{{total_visa_approved}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress progress-sm mt-3">
+                    <div class="progress-bar bg-8" role="progressbar" style="width: {{total_visa_approved}}%" aria-valuenow="{{total_visa_approved}}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p class="text-success mt-3 mb-0">{{total_visa_approved}} visa approved out of {{total_file_opened}} file opened.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-5 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Event Analytics</h5>
+
+                    <select class="form-control event">
+                        {% for event in event_qs %}
+                            <option value="{{event.id}}" data-event-pie-chart-url="{% url 'lead_management:event_pie_chart' event.id %}">{{event.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="card-body pie-chart-data">
+                <div id="invoice_chart"></div>
+                {{event_data}}
+                <div class="text-center text-muted">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="mt-4">
+                                <p class="mb-2 text-truncate"><i class="fas fa-circle text-primary mr-1"></i> Invoiced</p>
+                                <h5>$ 2,132</h5>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="mt-4">
+                                <p class="mb-2 text-truncate"><i class="fas fa-circle text-success mr-1"></i> Received</p>
+                                <h5>$ 1,763</h5>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="mt-4">
+                                <p class="mb-2 text-truncate"><i class="fas fa-circle text-danger mr-1"></i> Pending</p>
+                                <h5>$ 973</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {% include './chart/_task_analysis.html' %}
+</div>
+{% endblock content %}
+
+
+
+{% block script %}
+    <script>
+        jQuery(document).ready(function($) {
+
+            $('.event').change(function(){
+                var pie_chart_url = $(this).find(':selected').attr('data-event-pie-chart-url')
+                show_chart(pie_chart_url,'pie-chart-data')
+            });
+
+
+
+
+
+            var pie_chart_url = $('select').find(':selected').attr('data-event-pie-chart-url');
+            show_chart(pie_chart_url,'pie-chart-data');
+
+
+
+            function show_chart(url,class_name){
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                })
+                .done(function(data) {
+                    console.log(data)
+                    // $(`.${class_name}`).html(html);
+                    let labels = [];
+                    let series = []
+
+                    if(data.length){
+                        data.forEach( function(element, index) {
+                            labels.push(element.assignee__username);
+                            series.push(element.dcount)
+                        });
+                    }
+
+
+                    console.log(labels,data)
+
+
+                    var pieCtx = document.getElementById("invoice_chart"),
+                    pieConfig = {
+                        colors: ['#7638ff', '#ff737b', '#fda600', '#1ec1b0'],
+                        series: series,
+                        chart: {
+                            fontFamily: 'Poppins, sans-serif',
+                            height: 350,
+                            type: 'donut',
+                        },
+                        labels: labels,
+                        legend: {show: false},
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: 200
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+
+
+                    var pieChart = new ApexCharts(pieCtx, pieConfig);
+                    pieChart.render();
+
+                })
+                .fail(function() {
+                    console.log("error");
+                })
+                .always(function() {
+                    console.log("complete");
+                });
+            }
+        });
+    </script>
+{% endblock script %}

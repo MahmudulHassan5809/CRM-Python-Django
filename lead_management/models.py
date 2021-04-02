@@ -5,6 +5,8 @@ from smart_selects.db_fields import ChainedForeignKey
 from ckeditor.fields import RichTextField
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from datetime import date, datetime, timedelta
+from django.utils.timezone import now, localtime
 
 
 User = get_user_model()
@@ -13,8 +15,12 @@ User = get_user_model()
 
 
 class EventQuerySet(models.QuerySet):
-	def filter_by_query(self,query):
-		return self.filter(name__icontains=query)
+    def filter_by_query(self,query):
+        return self.filter(name__icontains=query)
+
+    def upcoming_event(self):
+        today = datetime.today()
+        return self.filter(event_date__gte=today)
 
 class Event(models.Model):
 	name = models.CharField(max_length=255)
@@ -47,6 +53,11 @@ class LeadQuerySet(models.QuerySet):
     def filter_by_is_assigned(self,bool):
     	return self.filter(assigned=bool)
 
+    def filter_by_status(self,status):
+        return self.filter(status=status)
+
+
+
 
 
 class Lead(models.Model):
@@ -75,13 +86,13 @@ class Lead(models.Model):
                 ('OTHER', 'Other'),
             )
         ),
-        ('FILE_OPENED', 'File Opened'),        
+        ('FILE_OPENED', 'File Opened'),
     ]
 
     LEAD_QUALITY_CHOICE = (
         ('EXCELLENT','Excellent'),
         ('GOOD','Good'),
-        ('AVERAGE','Average'), 
+        ('AVERAGE','Average'),
         ('BAD','Bad')
     )
 
@@ -152,4 +163,3 @@ class TaskAssign(models.Model):
 # def create_student(sender, instance, created, **kwargs):
 #     if not created and instance.status == 'FILE_OPENED':
 #         Student.objects.get_or_create(lead=instance,branch=instance.lead_task.branch,event=instance.event)
-    
