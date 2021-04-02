@@ -16,8 +16,8 @@ from accounts.mixins import SuperAdminRequiredMixin
 
 from branch.models import Branch
 from lead_management.models import Lead,Event,TaskAssign
-from students.models import Student,StudentDocument,StudentCredentials
-from students.forms import StudentDocumentForm,StudentCredentialsForm,ApplicationStatusFormSet,VisaStatusFormSet,STUDENT_DOCUMENT_INTITAL_DATA,STUDENT_CREDENTIALS_INTITAL_DATA
+from students.models import Student,StudentDocument,StudentCredentials,StudentPayment
+from students.forms import StudentDocumentForm,StudentCredentialsForm,ApplicationStatusFormSet,VisaStatusFormSet,StudentPaymentForm,STUDENT_DOCUMENT_INTITAL_DATA,STUDENT_CREDENTIALS_INTITAL_DATA
 
 
 # Create your views here.
@@ -68,6 +68,10 @@ class StudentDetailView(LoginRequiredMixin,generic.DetailView):
 	    else:
 	    	context["credentials_form"] = StudentCredentialsForm(initial={'credentials' : STUDENT_CREDENTIALS_INTITAL_DATA})
 
+	    if hasattr(self.object,'payment_history'):
+	    	context["payment_form"] = StudentPaymentForm(initial={'payment_history' : self.object.payment_history.payment_history})
+	    else:
+	    	context["payment_form"] = StudentPaymentForm()
 
 
 	    # print(self.request.META.get('HTTP_REFERER'),'--------------')
@@ -113,6 +117,24 @@ class AddStudentCredentialsView(LoginRequiredMixin,View):
 
 
 		request.session['active_tab'] = 'credentials'
+		return redirect("students:student_detail",student_id)
+
+
+class AddStudentPaymentView(LoginRequiredMixin,View):
+	def post(self,request,*args,**kwargs):
+		student_id = self.kwargs.get('student_id')
+		student_obj = get_object_or_404(Student,id=student_id)
+
+		payment_history = request.POST.get('payment_history')
+
+		if hasattr(student_obj,'payment_history'):
+			student_obj.payment_history.payment_history = payment_history
+			student_obj.payment_history.save()
+		else:
+			StudentPayment.objects.create(student=student_obj,payment_history=payment_history)
+
+
+		request.session['active_tab'] = 'payment'
 		return redirect("students:student_detail",student_id)
 
 

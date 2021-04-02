@@ -89,3 +89,12 @@ class StudentVisaStatus(models.Model):
 	class Meta:
 		verbose_name_plural = "4. Student Application Status"
 
+
+
+class StudentPayment(models.Model):
+	student = models.OneToOneField(Student,on_delete=models.CASCADE,related_name='payment_history')
+	payment_history = RichTextField(null=True,blank=True)
+
+	class Meta:
+		verbose_name_plural = "3.Student Payment History"
+		

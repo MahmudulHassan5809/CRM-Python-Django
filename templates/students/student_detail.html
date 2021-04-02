@@ -46,6 +46,12 @@
 							    <a class="nav-link" id="credentials-tab" data-toggle="tab" href="#credentials" role="tab" aria-controls="credentials" aria-selected="false">Applicant Credentials</a>
 							  </li>
 
+							  <li class="nav-item {% if  request.session.active_tab == 'payment'  %}
+							    	active
+							    {% endif %}">
+							    <a class="nav-link" id="payment-tab" data-toggle="tab" href="#payment" role="tab" aria-controls="payment" aria-selected="false">Payment History</a>
+							  </li>
+
 							  <li class="nav-item">
 							    <a class="nav-link {% if  request.session.active_tab == 'application_status'  %}
 							    	active
@@ -179,6 +185,28 @@
 													{% csrf_token %}
 													{{credentials_form.media}}
 													{{credentials_form|crispy}}
+
+
+
+													<input type="submit" value="Save" class="btn btn-sm btn-primary rounded-0">
+
+
+											</form>
+										</div>
+									</div>
+
+								</div>
+
+
+								<div class="tab-pane fade {% if  request.session.active_tab == 'payment'  %}
+							    	active show
+							    {% endif %}" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+									<div class="card">
+										<div class="card-body">
+											<form action="{% url 'students:add_student_payment' student_obj.id %}" method="POST">
+													{% csrf_token %}
+													{{payment_form.media}}
+													{{payment_form|crispy}}
 
 
 

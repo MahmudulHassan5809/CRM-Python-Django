@@ -9,7 +9,7 @@ from django.forms.models import inlineformset_factory
 
 import mimetypes
 
-from .models import StudentDocument,StudentCredentials,StudentApplicationStatus,Student,StudentVisaStatus
+from .models import StudentDocument,StudentCredentials,StudentApplicationStatus,Student,StudentVisaStatus,StudentPayment
 
 
 STUDENT_DOCUMENT_INTITAL_DATA = """<ol>
@@ -105,3 +105,10 @@ class StudentVisaStatusForm(forms.ModelForm):
 
 VisaStatusFormSet = inlineformset_factory(
     Student, StudentVisaStatus, form=StudentVisaStatusForm, extra=1)
+
+
+
+class StudentPaymentForm(ModelForm):
+	class Meta:
+		model = StudentPayment
+		fields = ['payment_history']
